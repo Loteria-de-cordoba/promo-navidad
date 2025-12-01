@@ -91,6 +91,30 @@
         .section-border {
             border-color: #3b82f6;
         }
+
+        .hidden {
+            display: none;
+        }
+
+        .radio-card {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid #e5e7eb;
+        }
+
+        .radio-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+
+        .radio-card.selected {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        input[type="radio"] {
+            accent-color: #3b82f6;
+        }
     </style>
 </head>
 
@@ -99,8 +123,8 @@
         <!-- Header -->
         <div class="text-center mb-8 fade-in">
             <div class="mb-4 flex justify-center">
-                <img src="assets/LDC Logotipo COLOR Horizontal 300dpi.png" alt="Loteria de Córdoba"
-                    class="h-20 md:h-24">
+                <img src="assets/LDC Logotipo BLANCO+COLOR Vertical 300dpi.png" alt="Loteria de Córdoba"
+                    class="h-32 md:h-40">
             </div>
             <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">EL CENTRO ESTÁ DE FIESTA</h1>
             <p class="text-white text-lg opacity-90">Completá tus datos y participá del sorteo</p>
@@ -109,10 +133,35 @@
         <!-- Form Container -->
         <div class="glass-effect rounded-2xl p-6 md:p-8 mb-6 fade-in">
             <form id="purchaseForm">
-                <!-- Datos de la Agencia -->
+                <!-- Tipo de Compra -->
                 <div class="mb-8">
                     <h2 class="text-2xl font-bold text-blue-900 mb-4 pb-2 border-b-2 section-border">
-                        🏪 Datos de la Agencia
+                        🛍️ ¿Dónde realizaste tu compra?
+                    </h2>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <label class="radio-card rounded-lg p-6 text-center" id="radioAgencia">
+                            <input type="radio" name="tipoCompra" value="agencia" class="mb-3"
+                                style="width: 20px; height: 20px;">
+                            <div class="text-xl font-bold text-blue-900">🏪 En Agencia</div>
+                            <div class="text-sm text-gray-600 mt-2">Seleccioná si compraste en una agencia de Lotería
+                            </div>
+                        </label>
+
+                        <label class="radio-card rounded-lg p-6 text-center" id="radioComercio">
+                            <input type="radio" name="tipoCompra" value="comercio" class="mb-3"
+                                style="width: 20px; height: 20px;">
+                            <div class="text-xl font-bold text-blue-900">🛒 En Comercio</div>
+                            <div class="text-sm text-gray-600 mt-2">Seleccioná si compraste en un comercio adherido
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Datos de la Agencia -->
+                <div id="seccionAgencia" class="mb-8 hidden">
+                    <h2 class="text-2xl font-bold text-blue-900 mb-4 pb-2 border-b-2 section-border">
+                        🏪 ¿Compraste en Agencia?
                     </h2>
 
                     <div class="space-y-4">
@@ -120,8 +169,8 @@
                             <label for="ocr" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Número OCR *
                             </label>
-                            <input type="text" id="ocr" name="ocr" required placeholder="1234567890123456"
-                                pattern="[0-9]{16}" maxlength="16"
+                            <input type="text" id="ocr" name="ocr" placeholder="1234567890123456" pattern="[0-9]{16}"
+                                maxlength="16"
                                 class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
                             <p class="text-xs text-gray-500 mt-1">16 dígitos</p>
                         </div>
@@ -131,7 +180,7 @@
                                 <label for="nroSucursal" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Número de Sucursal *
                                 </label>
-                                <input type="text" id="nroSucursal" name="nroSucursal" required placeholder="01"
+                                <input type="text" id="nroSucursal" name="nroSucursal" placeholder="01"
                                     pattern="[0-9]{2}" maxlength="2"
                                     class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
                                 <p class="text-xs text-gray-500 mt-1">2 dígitos</p>
@@ -141,19 +190,41 @@
                                 <label for="nroAgencia" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Número de Agencia *
                                 </label>
-                                <input type="text" id="nroAgencia" name="nroAgencia" required placeholder="12345"
+                                <input type="text" id="nroAgencia" name="nroAgencia" placeholder="12345"
                                     pattern="[0-9]{5}" maxlength="5"
                                     class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
                                 <p class="text-xs text-gray-500 mt-1">5 dígitos</p>
                             </div>
                         </div>
+
+                        <div>
+                            <label for="ticketAgencia" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Foto del Ticket de Agencia *
+                            </label>
+                            <div class="relative">
+                                <input type="file" id="ticketAgencia" name="ticketAgencia" accept="image/*"
+                                    class="hidden" onchange="updateFileName(this, 'fileNameAgencia')" />
+                                <label for="ticketAgencia"
+                                    class="input-field cursor-pointer flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50">
+                                    <svg class="w-6 h-6 text-gray-400 mr-2" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+                                        </path>
+                                    </svg>
+                                    <span id="fileNameAgencia" class="text-gray-600">Hacé clic para subir tu
+                                        ticket...</span>
+                                </label>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Aceptamos JPG, PNG o WebP</p>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Datos de la Compra -->
-                <div class="mb-8">
+                <!-- Datos del Comercio -->
+                <div id="seccionComercio" class="mb-8 hidden">
                     <h2 class="text-2xl font-bold text-blue-900 mb-4 pb-2 border-b-2 section-border">
-                        🛒 Información de tu Compra
+                        🛒 ¿Compraste en Comercio?
                     </h2>
 
                     <div class="space-y-4">
@@ -161,7 +232,7 @@
                             <label for="cuitLocal" class="block text-sm font-semibold text-gray-700 mb-2">
                                 CUIT del Comercio *
                             </label>
-                            <input type="text" id="cuitLocal" name="cuitLocal" required placeholder="20-12345678-9"
+                            <input type="text" id="cuitLocal" name="cuitLocal" placeholder="20-12345678-9"
                                 pattern="[0-9]{2}-[0-9]{8}-[0-9]{1}" maxlength="13"
                                 class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
                             <p class="text-xs text-gray-500 mt-1">Formato: XX-XXXXXXXX-X</p>
@@ -171,8 +242,8 @@
                             <label for="nroComprobante" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Número de Ticket o Factura *
                             </label>
-                            <input type="text" id="nroComprobante" name="nroComprobante" required
-                                placeholder="0001-00000001" pattern="[0-9]{4}-[0-9]{8}" maxlength="13"
+                            <input type="text" id="nroComprobante" name="nroComprobante" placeholder="0001-00000001"
+                                pattern="[0-9]{4}-[0-9]{8}" maxlength="13"
                                 class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
                             <p class="text-xs text-gray-500 mt-1">Formato: XXXX-XXXXXXXX (4 dígitos - 8 dígitos)</p>
                         </div>
@@ -183,21 +254,20 @@
                             </label>
                             <div class="relative">
                                 <span class="absolute left-4 top-3 text-gray-600 font-semibold">$</span>
-                                <input type="number" id="monto" name="monto" required min="30000" step="0.01"
-                                    placeholder="30000"
+                                <input type="number" id="monto" name="monto" min="30000" step="0.01" placeholder="30000"
                                     class="input-field w-full pl-8 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
                             </div>
                             <p class="text-xs text-gray-500 mt-1">Monto mínimo para participar: $30.000</p>
                         </div>
 
                         <div>
-                            <label for="ticket" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <label for="ticketComercio" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Foto del Ticket o Factura *
                             </label>
                             <div class="relative">
-                                <input type="file" id="ticket" name="ticket" required accept="image/*" class="hidden"
-                                    onchange="updateFileName(this)" />
-                                <label for="ticket"
+                                <input type="file" id="ticketComercio" name="ticketComercio" accept="image/*"
+                                    class="hidden" onchange="updateFileName(this, 'fileNameComercio')" />
+                                <label for="ticketComercio"
                                     class="input-field cursor-pointer flex items-center justify-center w-full px-4 py-3 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50">
                                     <svg class="w-6 h-6 text-gray-400 mr-2" fill="none" stroke="currentColor"
                                         viewBox="0 0 24 24">
@@ -205,7 +275,7 @@
                                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
                                         </path>
                                     </svg>
-                                    <span id="fileName" class="text-gray-600">Hacé clic para subir tu
+                                    <span id="fileNameComercio" class="text-gray-600">Hacé clic para subir tu
                                         comprobante...</span>
                                 </label>
                             </div>
@@ -301,10 +371,59 @@
     </div>
 
     <script>
+        // Handle purchase type selection
+        const radioAgencia = document.querySelector('input[value="agencia"]');
+        const radioComercio = document.querySelector('input[value="comercio"]');
+        const seccionAgencia = document.getElementById('seccionAgencia');
+        const seccionComercio = document.getElementById('seccionComercio');
+
+        // Radio card styling
+        document.querySelectorAll('input[name="tipoCompra"]').forEach(radio => {
+            radio.addEventListener('change', function () {
+                // Update card styles
+                document.getElementById('radioAgencia').classList.remove('selected');
+                document.getElementById('radioComercio').classList.remove('selected');
+
+                if (this.value === 'agencia') {
+                    document.getElementById('radioAgencia').classList.add('selected');
+                    seccionAgencia.classList.remove('hidden');
+                    seccionComercio.classList.add('hidden');
+
+                    // Set required fields for agencia
+                    document.getElementById('ocr').required = true;
+                    document.getElementById('nroSucursal').required = true;
+                    document.getElementById('nroAgencia').required = true;
+                    document.getElementById('ticketAgencia').required = true;
+
+                    // Remove required from comercio
+                    document.getElementById('cuitLocal').required = false;
+                    document.getElementById('nroComprobante').required = false;
+                    document.getElementById('monto').required = false;
+                    document.getElementById('ticketComercio').required = false;
+                } else {
+                    document.getElementById('radioComercio').classList.add('selected');
+                    seccionComercio.classList.remove('hidden');
+                    seccionAgencia.classList.add('hidden');
+
+                    // Set required fields for comercio
+                    document.getElementById('cuitLocal').required = true;
+                    document.getElementById('nroComprobante').required = true;
+                    document.getElementById('monto').required = true;
+                    document.getElementById('ticketComercio').required = true;
+
+                    // Remove required from agencia
+                    document.getElementById('ocr').required = false;
+                    document.getElementById('nroSucursal').required = false;
+                    document.getElementById('nroAgencia').required = false;
+                    document.getElementById('ticketAgencia').required = false;
+                }
+            });
+        });
+
         // Update file name display
-        function updateFileName(input) {
+        function updateFileName(input, spanId) {
             const fileName = input.files[0]?.name || 'Hacé clic para subir tu comprobante...';
-            document.getElementById('fileName').textContent = fileName;
+            document.getElementById(spanId).textContent = fileName;
         }
 
         // Format CUIT del Local automatically
@@ -362,6 +481,13 @@
             const submitBtn = document.getElementById('submitBtn');
             const responseContainer = document.getElementById('responseContainer');
 
+            // Check if purchase type is selected
+            const tipoCompra = document.querySelector('input[name="tipoCompra"]:checked');
+            if (!tipoCompra) {
+                alert('Por favor, seleccioná si compraste en Agencia o en Comercio');
+                return;
+            }
+
             // Disable button and show loading
             submitBtn.disabled = true;
             submitBtn.innerHTML = 'Enviando...<div class="spinner"></div>';
@@ -371,13 +497,41 @@
                 // Get form data
                 const formData = new FormData();
 
-                // Add all form fields
-                formData.append('ocr', document.getElementById('ocr').value);
-                formData.append('nroSucursal', document.getElementById('nroSucursal').value);
-                formData.append('nroAgencia', document.getElementById('nroAgencia').value);
-                formData.append('cuitLocal', document.getElementById('cuitLocal').value);
-                formData.append('nroComprobante', document.getElementById('nroComprobante').value);
-                formData.append('monto', document.getElementById('monto').value);
+                // Add purchase type
+                formData.append('tipoCompra', tipoCompra.value);
+
+                // Add fields based on purchase type
+                if (tipoCompra.value === 'agencia') {
+                    formData.append('ocr', document.getElementById('ocr').value);
+                    formData.append('nroSucursal', document.getElementById('nroSucursal').value);
+                    formData.append('nroAgencia', document.getElementById('nroAgencia').value);
+
+                    // Handle file upload for agencia
+                    const fileInput = document.getElementById('ticketAgencia');
+                    const file = fileInput.files[0];
+                    if (file) {
+                        const base64 = await fileToBase64(file);
+                        formData.append('ticketBase64', base64);
+                        formData.append('ticketFileName', file.name);
+                        formData.append('ticketContentType', file.type);
+                    }
+                } else {
+                    formData.append('cuitLocal', document.getElementById('cuitLocal').value);
+                    formData.append('nroComprobante', document.getElementById('nroComprobante').value);
+                    formData.append('monto', document.getElementById('monto').value);
+
+                    // Handle file upload for comercio
+                    const fileInput = document.getElementById('ticketComercio');
+                    const file = fileInput.files[0];
+                    if (file) {
+                        const base64 = await fileToBase64(file);
+                        formData.append('ticketBase64', base64);
+                        formData.append('ticketFileName', file.name);
+                        formData.append('ticketContentType', file.type);
+                    }
+                }
+
+                // Add personal data (always required)
                 formData.append('nombre', document.getElementById('nombre').value);
                 formData.append('apellido', document.getElementById('apellido').value);
                 formData.append('dni', document.getElementById('dni').value);
@@ -385,17 +539,6 @@
                 formData.append('codigoArea', document.getElementById('codigoArea').value);
                 formData.append('telefono', document.getElementById('telefono').value);
                 formData.append('email', document.getElementById('email').value);
-
-                // Handle file upload - convert to base64
-                const fileInput = document.getElementById('ticket');
-                const file = fileInput.files[0];
-
-                if (file) {
-                    const base64 = await fileToBase64(file);
-                    formData.append('ticketBase64', base64);
-                    formData.append('ticketFileName', file.name);
-                    formData.append('ticketContentType', file.type);
-                }
 
                 // Convert FormData to JSON for Power Automate
                 const jsonData = {};
@@ -428,7 +571,12 @@
                 // Reset form on success
                 if (response.ok) {
                     document.getElementById('purchaseForm').reset();
-                    document.getElementById('fileName').textContent = 'Hacé clic para subir tu comprobante...';
+                    document.getElementById('fileNameAgencia').textContent = 'Hacé clic para subir tu ticket...';
+                    document.getElementById('fileNameComercio').textContent = 'Hacé clic para subir tu comprobante...';
+                    seccionAgencia.classList.add('hidden');
+                    seccionComercio.classList.add('hidden');
+                    document.getElementById('radioAgencia').classList.remove('selected');
+                    document.getElementById('radioComercio').classList.remove('selected');
                 }
 
             } catch (error) {
