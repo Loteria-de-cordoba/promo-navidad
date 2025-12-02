@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Compra - El Centro está de Fiesta</title>
+    <title>Formular io de Compra - El Centro está de Fiesta</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -136,7 +136,7 @@
                 <!-- Tipo de Compra -->
                 <div class="mb-8">
                     <h2 class="text-2xl font-bold text-blue-900 mb-4 pb-2 border-b-2 section-border">
-                        🛍️ ¿Dónde realizaste tu compra?
+                        🛍️ Comenzemos a completar tus datos
                     </h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -144,7 +144,7 @@
                             <input type="radio" name="tipoCompra" value="agencia" class="mb-3"
                                 style="width: 20px; height: 20px;">
                             <div class="text-xl font-bold text-blue-900">🏪 En Agencia</div>
-                            <div class="text-sm text-gray-600 mt-2">Seleccioná si compraste en una agencia de Lotería
+                            <div class="text-sm text-gray-600 mt-2">Seleccioná si apostaste en una agencia de Lotería
                             </div>
                         </label>
 
@@ -161,7 +161,7 @@
                 <!-- Datos de la Agencia -->
                 <div id="seccionAgencia" class="mb-8 hidden">
                     <h2 class="text-2xl font-bold text-blue-900 mb-4 pb-2 border-b-2 section-border">
-                        🏪 ¿Compraste en Agencia?
+                        🏪 Apuesta en Agencia
                     </h2>
 
                     <div class="space-y-4">
@@ -198,6 +198,19 @@
                         </div>
 
                         <div>
+                            <label for="montoAgencia" class="block text-sm font-semibold text-gray-700 mb-2">
+                                Monto Total de la Apuesta *
+                            </label>
+                            <div class="relative">
+                                <span class="absolute left-4 top-3 text-gray-600 font-semibold">$</span>
+                                <input type="number" id="montoAgencia" name="montoAgencia" min="5000" step="0.01"
+                                    placeholder="5000"
+                                    class="input-field w-full pl-8 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1">Monto mínimo para participar: $5.000</p>
+                        </div>
+
+                        <div>
                             <label for="ticketAgencia" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Foto del Ticket de Agencia *
                             </label>
@@ -224,7 +237,7 @@
                 <!-- Datos del Comercio -->
                 <div id="seccionComercio" class="mb-8 hidden">
                     <h2 class="text-2xl font-bold text-blue-900 mb-4 pb-2 border-b-2 section-border">
-                        🛒 ¿Compraste en Comercio?
+                        🛒 Compra en Comercio
                     </h2>
 
                     <div class="space-y-4">
@@ -258,6 +271,20 @@
                                     class="input-field w-full pl-8 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
                             </div>
                             <p class="text-xs text-gray-500 mt-1">Monto mínimo para participar: $30.000</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">
+                                Medio de Pago
+                            </label>
+                            <div
+                                class="flex items-center p-4 border-2 border-gray-300 rounded-lg hover:border-blue-400 transition-colors">
+                                <input type="radio" id="medioPagoBancor" name="medioPago" value="bancor" class="mr-3"
+                                    style="width: 20px; height: 20px;">
+                                <label for="medioPagoBancor" class="text-gray-700 cursor-pointer font-medium">
+                                    💳 Banco de Córdoba
+                                </label>
+                            </div>
                         </div>
 
                         <div>
@@ -393,6 +420,7 @@
                     document.getElementById('ocr').required = true;
                     document.getElementById('nroSucursal').required = true;
                     document.getElementById('nroAgencia').required = true;
+                    document.getElementById('montoAgencia').required = true;
                     document.getElementById('ticketAgencia').required = true;
 
                     // Remove required from comercio
@@ -415,6 +443,7 @@
                     document.getElementById('ocr').required = false;
                     document.getElementById('nroSucursal').required = false;
                     document.getElementById('nroAgencia').required = false;
+                    document.getElementById('montoAgencia').required = false;
                     document.getElementById('ticketAgencia').required = false;
                 }
             });
@@ -505,6 +534,7 @@
                     formData.append('ocr', document.getElementById('ocr').value);
                     formData.append('nroSucursal', document.getElementById('nroSucursal').value);
                     formData.append('nroAgencia', document.getElementById('nroAgencia').value);
+                    formData.append('montoAgencia', document.getElementById('montoAgencia').value);
 
                     // Handle file upload for agencia
                     const fileInput = document.getElementById('ticketAgencia');
@@ -519,6 +549,12 @@
                     formData.append('cuitLocal', document.getElementById('cuitLocal').value);
                     formData.append('nroComprobante', document.getElementById('nroComprobante').value);
                     formData.append('monto', document.getElementById('monto').value);
+
+                    // Agregar medio de pago si está seleccionado
+                    const medioPago = document.querySelector('input[name="medioPago"]:checked');
+                    if (medioPago) {
+                        formData.append('medioPago', medioPago.value);
+                    }
 
                     // Handle file upload for comercio
                     const fileInput = document.getElementById('ticketComercio');
