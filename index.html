@@ -177,8 +177,43 @@
 </head>
 
 <body class="p-4 md:p-8">
+    <!-- Modal de Premios -->
+    <div id="prizesModal" class="modal-overlay">
+        <div class="modal-content">
+            <!-- Imagen de Premios PRIMERO -->
+            <div class="mb-6">
+                <img src="assets/premios.png" alt="Premios del Sorteo" class="w-full rounded-lg shadow-lg">
+            </div>
+
+            <!-- Logo de Lotería de Córdoba -->
+            <div class="mb-4 flex justify-center">
+                <img src="assets/LDC Logotipo COLOR Vertical 300dpi.png" alt="Lotería de Córdoba" class="h-20 md:h-24">
+            </div>
+
+            <!-- Título y descripción -->
+            <div class="text-center mb-6">
+
+                <h2 class="text-3xl font-bold text-blue-900 mb-2">¡Participa y Gana Grandes Premios!</h2>
+                <p class="text-gray-700">¿Te imaginas ganar uno de estos increíbles premios? ¡Ahora es tu
+                    oportunidad! Solo tienes que seguir unos simples pasos para entrar en nuestro sorteo y ser uno de
+                    los afortunados ganadores.</p>
+            </div>
+
+            <!-- Cómo Participar -->
+            <div class="bg-blue-50 p-6 rounded-lg mb-6">
+                <h3 class="font-bold text-lg text-blue-900 mb-3">¿Cómo Participar?</h3>
+                <p class="text-gray-700 mb-3">Ingresa tus datos en el formulario que aparecerá al confirmar.</p>
+                <p class="text-gray-700 font-semibold">¡Listo! Ya estás participando.</p>
+            </div>
+
+            <button id="continuePrizesBtn" class="btn-accept w-full text-white font-bold py-4 px-6 rounded-lg text-lg">
+                🎁 ¡Quiero Participar!
+            </button>
+        </div>
+    </div>
+
     <!-- Modal de Términos y Condiciones -->
-    <div id="termsModal" class="modal-overlay">
+    <div id="termsModal" class="modal-overlay modal-hidden">
         <div class="modal-content">
             <div class="text-center mb-6">
                 <div class="text-6xl mb-4">📋</div>
@@ -256,7 +291,8 @@
             <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">EL CENTRO ESTÁ DE FIESTA</h1>
             <p class="text-white text-lg opacity-90">Completá tus datos y participá del sorteo</p>
             <p class="text-white text-xl font-semibold mt-3">🎁 Sorteo: 26 de Diciembre a las 20 hs 🎁</p>
-            <p class="text-white text-md opacity-90 mt-2">📍 Lotería de Córdoba Casa Central - 27 de Abril 185</p>
+            <p class="text-white text-md opacity-90 mt-2">📍Te esperamos en Lotería de Córdoba Casa Central - 27 de
+                Abril 185</p>
         </div>
 
         <!-- Form Container -->
@@ -527,11 +563,21 @@
     </div>
 
     <script>
-        // Modal de términos y condiciones
+        // Modal de premios (se muestra primero)
+        const prizesModal = document.getElementById('prizesModal');
+        const continuePrizesBtn = document.getElementById('continuePrizesBtn');
+
+        // Modal de términos y condiciones (se muestra segundo)
         const termsModal = document.getElementById('termsModal');
         const mayorEdadCheck = document.getElementById('mayorEdadCheck');
         const terminosCheck = document.getElementById('terminosCheck');
         const acceptTermsBtn = document.getElementById('acceptTermsBtn');
+
+        // Cerrar modal de premios y mostrar términos
+        continuePrizesBtn.addEventListener('click', function () {
+            prizesModal.classList.add('modal-hidden');
+            termsModal.classList.remove('modal-hidden');
+        });
 
         // Habilitar botón solo cuando ambos checkboxes estén marcados
         function updateAcceptButton() {
@@ -545,7 +591,7 @@
         mayorEdadCheck.addEventListener('change', updateAcceptButton);
         terminosCheck.addEventListener('change', updateAcceptButton);
 
-        // Cerrar modal al aceptar
+        // Cerrar modal de términos al aceptar
         acceptTermsBtn.addEventListener('click', function () {
             termsModal.classList.add('modal-hidden');
         });
