@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formular io de Compra - El Centro está de Fiesta</title>
+    <title>Formulario de Compra - El Centro está de Fiesta</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -115,10 +115,137 @@
         input[type="radio"] {
             accent-color: #3b82f6;
         }
+
+        /* Modal styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modalSlideIn 0.3s ease-out;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-hidden {
+            display: none;
+        }
+
+        .btn-accept {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-accept:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-accept:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
     </style>
 </head>
 
 <body class="p-4 md:p-8">
+    <!-- Modal de Términos y Condiciones -->
+    <div id="termsModal" class="modal-overlay">
+        <div class="modal-content">
+            <div class="text-center mb-6">
+                <div class="text-6xl mb-4">📋</div>
+                <h2 class="text-3xl font-bold text-blue-900 mb-2">Términos y Condiciones</h2>
+                <p class="text-gray-600">Por favor, leé y aceptá los términos antes de continuar</p>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-lg mb-6 max-h-64 overflow-y-auto">
+                <h3 class="font-bold text-lg text-blue-900 mb-3">Condiciones de Participación</h3>
+                <ul class="space-y-2 text-gray-700 text-sm">
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">✓</span>
+                        <span>Podrán participar todas las personas mayores de 18 años que realicen compras en comercios
+                            adheridos o apuestas en agencias de Lotería de Córdoba.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">✓</span>
+                        <span>Para comercios: el monto mínimo de compra debe ser de $30.000.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">✓</span>
+                        <span>Para agencias: el monto mínimo de apuesta debe ser de $5.000.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">✓</span>
+                        <span>Los datos proporcionados serán utilizados únicamente para el sorteo y posterior contacto
+                            con los ganadores.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">✓</span>
+                        <span>Al participar, aceptás que tus datos sean almacenados y procesados según la normativa
+                            vigente de protección de datos personales.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">✓</span>
+                        <span>La promoción es válida durante el período establecido por Lotería de Córdoba.</span>
+                    </li>
+                    <li class="flex items-start">
+                        <span class="text-blue-600 mr-2">✓</span>
+                        <span>Los ganadores serán contactados por los medios proporcionados en el formulario.</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="space-y-4">
+                <div class="flex items-start p-4 border-2 border-blue-300 rounded-lg bg-blue-50">
+                    <input type="checkbox" id="mayorEdadCheck" class="mt-1 mr-3" style="width: 20px; height: 20px;">
+                    <label for="mayorEdadCheck" class="cursor-pointer font-semibold text-blue-900">
+                        Declaro que soy mayor de 18 años *
+                    </label>
+                </div>
+
+                <div class="flex items-start p-4 border-2 border-blue-300 rounded-lg bg-blue-50">
+                    <input type="checkbox" id="terminosCheck" class="mt-1 mr-3" style="width: 20px; height: 20px;">
+                    <label for="terminosCheck" class="cursor-pointer font-semibold text-blue-900">
+                        Acepto los términos y condiciones de la promoción *
+                    </label>
+                </div>
+
+                <button id="acceptTermsBtn" disabled
+                    class="btn-accept w-full text-white font-bold py-4 px-6 rounded-lg text-lg">
+                    ✅ Aceptar y Continuar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <div class="max-w-3xl mx-auto">
         <!-- Header -->
         <div class="text-center mb-8 fade-in">
@@ -128,6 +255,8 @@
             </div>
             <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">EL CENTRO ESTÁ DE FIESTA</h1>
             <p class="text-white text-lg opacity-90">Completá tus datos y participá del sorteo</p>
+            <p class="text-white text-xl font-semibold mt-3">🎁 Sorteo: 26 de Diciembre a las 20 hs 🎁</p>
+            <p class="text-white text-md opacity-90 mt-2">📍 Lotería de Córdoba Casa Central - 27 de Abril 185</p>
         </div>
 
         <!-- Form Container -->
@@ -398,6 +527,29 @@
     </div>
 
     <script>
+        // Modal de términos y condiciones
+        const termsModal = document.getElementById('termsModal');
+        const mayorEdadCheck = document.getElementById('mayorEdadCheck');
+        const terminosCheck = document.getElementById('terminosCheck');
+        const acceptTermsBtn = document.getElementById('acceptTermsBtn');
+
+        // Habilitar botón solo cuando ambos checkboxes estén marcados
+        function updateAcceptButton() {
+            if (mayorEdadCheck.checked && terminosCheck.checked) {
+                acceptTermsBtn.disabled = false;
+            } else {
+                acceptTermsBtn.disabled = true;
+            }
+        }
+
+        mayorEdadCheck.addEventListener('change', updateAcceptButton);
+        terminosCheck.addEventListener('change', updateAcceptButton);
+
+        // Cerrar modal al aceptar
+        acceptTermsBtn.addEventListener('click', function () {
+            termsModal.classList.add('modal-hidden');
+        });
+
         // Handle purchase type selection
         const radioAgencia = document.querySelector('input[value="agencia"]');
         const radioComercio = document.querySelector('input[value="comercio"]');
