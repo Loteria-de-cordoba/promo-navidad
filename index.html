@@ -182,17 +182,11 @@
         <div class="modal-content">
             <!-- Imagen de Premios PRIMERO -->
             <div class="mb-6">
-                <img src="assets/Premios.png" alt="Premios del Sorteo" class="w-full rounded-lg shadow-lg">
-            </div>
-
-            <!-- Logo de Lotería de Córdoba -->
-            <div class="mb-4 flex justify-center">
-                <img src="assets/LDC Logotipo COLOR Vertical 300dpi.png" alt="Lotería de Córdoba" class="h-20 md:h-24">
+                <img src="assets/Bancor.png" alt="Premios del Sorteo" class="w-full rounded-lg shadow-lg">
             </div>
 
             <!-- Título y descripción -->
             <div class="text-center mb-6">
-
                 <h2 class="text-3xl font-bold text-blue-900 mb-2">¡Participá y Ganá Grandes Premios!</h2>
                 <p class="text-gray-700">¿Te imaginás ganando uno de estos increíbles premios? ¡Ahora es tu
                     oportunidad! Sólo tenés que seguir unos simples pasos para entrar en nuestro sorteo y ser uno de
@@ -209,6 +203,11 @@
             <button id="continuePrizesBtn" class="btn-accept w-full text-white font-bold py-4 px-6 rounded-lg text-lg">
                 🎁 ¡Quiero Participar!
             </button>
+
+            <!-- Logo de Lotería de Córdoba -->
+            <div class="mt-6 flex justify-center">
+                <img src="assets/LDC Logotipo COLOR Vertical 300dpi.png" alt="Lotería de Córdoba" class="h-16 md:h-20">
+            </div>
         </div>
     </div>
 
@@ -283,16 +282,18 @@
 
     <div class="max-w-3xl mx-auto">
         <!-- Header -->
-        <div class="text-center mb-8 fade-in">
-            <div class="mb-4 flex justify-center">
+        <div class="mb-8 fade-in">
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-4">
                 <img src="assets/LDC Logotipo BLANCO+COLOR Vertical 300dpi.png" alt="Loteria de Córdoba"
-                    class="h-32 md:h-40">
+                    class="h-20 md:h-24">
+                <h1 class="text-2xl md:text-4xl font-bold text-white text-center">EL CENTRO ESTÁ DE FIESTA</h1>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">EL CENTRO ESTÁ DE FIESTA</h1>
-            <p class="text-white text-lg opacity-90">Completá tus datos y participá del sorteo</p>
-            <p class="text-white text-xl font-semibold mt-3">🎁 Sorteo: 26 de Diciembre a las 20 hs 🎁</p>
-            <p class="text-white text-md opacity-90 mt-2">📍Te esperamos en Lotería de Córdoba Casa Central - 27 de
-                Abril 185</p>
+            <div class="text-center">
+                <p class="text-white text-lg opacity-90">Completá tus datos y participá del sorteo</p>
+                <p class="text-white text-xl font-semibold mt-3">🎁 Sorteo: 26 de Diciembre a las 20 hs 🎁</p>
+                <p class="text-white text-md opacity-90 mt-2">📍Te esperamos en Lotería de Córdoba Casa Central - 27 de
+                    Abril 185</p>
+            </div>
         </div>
 
         <!-- Form Container -->
@@ -751,7 +752,7 @@
             try {
                 // Get gender value
                 const genero = document.querySelector('input[name="sexo"]:checked')?.value || '';
-                
+
                 // Get current datetime for fecha_creacion
                 const fechaCreacion = new Date().toISOString();
 
@@ -777,7 +778,7 @@
                     const file = fileInput.files[0];
                     let base64Image = '';
                     let imageType = '';
-                    
+
                     if (file) {
                         base64Image = await fileToBase64(file);
                         imageType = file.type;
@@ -793,7 +794,7 @@
                         nro_sucursal: document.getElementById('nroSucursal').value,
                         ocr: document.getElementById('ocr').value
                     };
-                    
+
                     // Add empty compra_comercio object
                     jsonData.compra_comercio = {
                         cuit_comercio: '',
@@ -810,7 +811,7 @@
                     const file = fileInput.files[0];
                     let base64Image = '';
                     let imageType = '';
-                    
+
                     if (file) {
                         base64Image = await fileToBase64(file);
                         imageType = file.type;
@@ -828,7 +829,7 @@
                         monto_total_compra: document.getElementById('monto').value.toString(),
                         numero_ticket_factura: document.getElementById('nroComprobante').value
                     };
-                    
+
                     // Add empty agencia object
                     jsonData.agencia = {
                         fecha_creacion: '',
@@ -902,32 +903,76 @@
             });
         }
 
-        // Show response message
+        // Show response message in modal
         function showResponse(success, data, statusCode) {
-            const responseContainer = document.getElementById('responseContainer');
-            const bgClass = success ? 'success-box' : 'error-box';
             const icon = success ? '✅' : '❌';
             const title = success ? '¡Tu participación fue registrada!' : 'Hubo un problema';
-
-            let dataDisplay = '';
-            if (typeof data === 'object') {
-                dataDisplay = `<pre class="bg-white bg-opacity-30 p-4 rounded-lg overflow-auto text-sm mt-4">${JSON.stringify(data, null, 2)}</pre>`;
+            
+            // Extract message from response if it's a success with status 200
+            let message = '';
+            if (success && statusCode === 200 && typeof data === 'object' && data.mensaje) {
+                message = data.mensaje;
+            } else if (typeof data === 'object') {
+                message = JSON.stringify(data, null, 2);
             } else {
-                dataDisplay = `<p class="mt-4 text-white">${data}</p>`;
+                message = data;
             }
 
-            responseContainer.innerHTML = `
-                <div class="${bgClass} rounded-2xl p-6 md:p-8 text-center">
-                    <div class="text-6xl mb-4">${icon}</div>
-                    <h3 class="text-2xl font-bold text-white mb-2">${title}</h3>
-                    ${statusCode ? `<p class="text-white opacity-90 mb-2">Código de respuesta: ${statusCode}</p>` : ''}
-                    ${dataDisplay}
-                    ${success ? '<p class="text-white mt-4 text-lg">¡Muchas gracias por participar! Te contactaremos en caso de resultar ganador/a.</p>' : '<p class="text-white mt-4">Por favor, revisá los datos e intentá nuevamente.</p>'}
+            // Create modal HTML
+            const modalHTML = `
+                <div class="modal-overlay" id="responseModal">
+                    <div class="modal-content">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4">${icon}</div>
+                            <h2 class="text-3xl font-bold text-blue-900 mb-2">${title}</h2>
+                            ${success && statusCode === 200 ? `
+                                <div class="bg-green-50 p-6 rounded-lg mb-6">
+                                    <p class="text-gray-700 text-lg">${message}</p>
+                                    <p class="text-gray-700 mt-4 font-semibold">¡Muchas gracias por participar! Te contactaremos en caso de resultar ganador/a.</p>
+                                </div>
+                            ` : `
+                                <div class="bg-red-50 p-6 rounded-lg mb-6">
+                                    <p class="text-gray-700">${message}</p>
+                                    <p class="text-gray-700 mt-4 font-semibold">Por favor, revisá los datos e intentá nuevamente.</p>
+                                </div>
+                            `}
+                        </div>
+                        <button onclick="closeResponseModal()" class="btn-accept w-full text-white font-bold py-4 px-6 rounded-lg text-lg">
+                            Cerrar
+                        </button>
+                    </div>
                 </div>
             `;
 
-            responseContainer.classList.remove('hidden');
-            responseContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // Close response modal and restart the form
+        function closeResponseModal() {
+            const modal = document.getElementById('responseModal');
+            if (modal) {
+                modal.remove();
+            }
+            
+            // Reset the form
+            document.getElementById('purchaseForm').reset();
+            document.getElementById('fileNameAgencia').textContent = 'Hacé clic para subir tu ticket...';
+            document.getElementById('fileNameComercio').textContent = 'Hacé clic para subir tu comprobante...';
+            
+            // Hide both sections
+            document.getElementById('seccionAgencia').classList.add('hidden');
+            document.getElementById('seccionComercio').classList.add('hidden');
+            
+            // Remove selected class from radio cards
+            document.getElementById('radioAgencia').classList.remove('selected');
+            document.getElementById('radioComercio').classList.remove('selected');
+            
+            // Show the prizes modal again
+            document.getElementById('prizesModal').classList.remove('modal-hidden');
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
