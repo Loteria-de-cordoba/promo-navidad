@@ -749,101 +749,64 @@
             responseContainer.classList.add('hidden');
 
             try {
-                // Get gender value
-                const genero = document.querySelector('input[name="sexo"]:checked')?.value || '';
-                
-                // Get current datetime for fecha_creacion
-                const fechaCreacion = new Date().toISOString();
+                // Get form data
+                const formData = new FormData();
 
-                // Build the JSON according to backend schema
-                const jsonData = {
-                    tipo: tipoCompra.value, // "agencia" o "comercio"
-                    persona: {
-                        apellido: document.getElementById('apellido').value,
-                        codigo_area: document.getElementById('codigoArea').value,
-                        correo_electronico: document.getElementById('email').value,
-                        dni: document.getElementById('dni').value,
-                        fecha_creacion: fechaCreacion,
-                        fecha_nacimiento: document.getElementById('fechaNacimiento').value,
-                        nombre: document.getElementById('nombre').value,
-                        genero: genero,
-                        telefono: document.getElementById('telefono').value
-                    }
-                };
+                // Add purchase type
+                formData.append('tipoCompra', tipoCompra.value);
 
-                // Add agencia or compra_comercio based on tipo
+                // Add fields based on purchase type
                 if (tipoCompra.value === 'agencia') {
+                    formData.append('ocr', document.getElementById('ocr').value);
+                    formData.append('nroSucursal', document.getElementById('nroSucursal').value);
+                    formData.append('nroAgencia', document.getElementById('nroAgencia').value);
+                    formData.append('montoAgencia', document.getElementById('montoAgencia').value);
+
+                    // Handle file upload for agencia
                     const fileInput = document.getElementById('ticketAgencia');
                     const file = fileInput.files[0];
-                    let base64Image = '';
-                    let imageType = '';
-                    
                     if (file) {
-                        base64Image = await fileToBase64(file);
-                        imageType = file.type;
+                        const base64 = await fileToBase64(file);
+                        formData.append('ticketBase64', base64);
+                        formData.append('ticketFileName', file.name);
+                        formData.append('ticketContentType', file.type);
+                    }
+                } else {
+                    formData.append('cuitLocal', document.getElementById('cuitLocal').value);
+                    formData.append('nroComprobante', document.getElementById('nroComprobante').value);
+                    formData.append('monto', document.getElementById('monto').value);
+
+                    // Agregar medio de pago si está seleccionado
+                    const medioPago = document.querySelector('input[name="medioPago"]:checked');
+                    if (medioPago) {
+                        formData.append('medioPago', medioPago.value);
                     }
 
-                    jsonData.agencia = {
-                        fecha_creacion: fechaCreacion,
-                        foto_ticket: base64Image,
-                        foto_tipo: imageType,
-                        id_persona: '', // Se puede completar en el backend si es necesario
-                        monto_apuesta: document.getElementById('montoAgencia').value.toString(),
-                        nro_agencia: document.getElementById('nroAgencia').value,
-                        nro_sucursal: document.getElementById('nroSucursal').value,
-                        ocr: document.getElementById('ocr').value
-                    };
-                    
-                    // Add empty compra_comercio object
-                    jsonData.compra_comercio = {
-                        cuit_comercio: '',
-                        fecha_creacion: '',
-                        foto_ticket_factura: '',
-                        foto_ticket_factura_tipo: '',
-                        id_persona: '',
-                        medio_pago: '',
-                        monto_total_compra: '',
-                        numero_ticket_factura: ''
-                    };
-                } else {
+                    // Handle file upload for comercio
                     const fileInput = document.getElementById('ticketComercio');
                     const file = fileInput.files[0];
-                    let base64Image = '';
-                    let imageType = '';
-                    
                     if (file) {
-                        base64Image = await fileToBase64(file);
-                        imageType = file.type;
+                        const base64 = await fileToBase64(file);
+                        formData.append('ticketBase64', base64);
+                        formData.append('ticketFileName', file.name);
+                        formData.append('ticketContentType', file.type);
                     }
-
-                    const medioPago = document.querySelector('input[name="medioPago"]:checked');
-
-                    jsonData.compra_comercio = {
-                        cuit_comercio: document.getElementById('cuitLocal').value,
-                        fecha_creacion: fechaCreacion,
-                        foto_ticket_factura: base64Image,
-                        foto_ticket_factura_tipo: imageType,
-                        id_persona: '', // Se puede completar en el backend si es necesario
-                        medio_pago: medioPago ? medioPago.value : '',
-                        monto_total_compra: document.getElementById('monto').value.toString(),
-                        numero_ticket_factura: document.getElementById('nroComprobante').value
-                    };
-                    
-                    // Add empty agencia object
-                    jsonData.agencia = {
-                        fecha_creacion: '',
-                        foto_ticket: '',
-                        foto_tipo: '',
-                        id_persona: '',
-                        monto_apuesta: '',
-                        nro_agencia: '',
-                        nro_sucursal: '',
-                        ocr: ''
-                    };
                 }
 
-                // Log JSON to console for verification
-                console.log('Datos a enviar:', JSON.stringify(jsonData, null, 2));
+                // Add personal data (always required)
+                formData.append('nombre', document.getElementById('nombre').value);
+                formData.append('apellido', document.getElementById('apellido').value);
+                formData.append('dni', document.getElementById('dni').value);
+                formData.append('fechaNacimiento', document.getElementById('fechaNacimiento').value);
+                formData.append('codigoArea', document.getElementById('codigoArea').value);
+                formData.append('telefono', document.getElementById('telefono').value);
+                formData.append('email', document.getElementById('email').value);
+
+                // Convert FormData to JSON for Power Automate
+                const jsonData = {};
+                for (let [key, value] of formData.entries()) {
+                    jsonData[key] = value;
+                }
 
                 // Send to Power Automate
                 const response = await fetch('https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/086daf758a8b42739f70ac64a995c20a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=IQB14siZevuLtO31WjZyvy4bove60j0oYJckZpLXFUM', {
