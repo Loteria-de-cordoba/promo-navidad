@@ -182,7 +182,7 @@
         <div class="modal-content">
             <!-- Imagen de Premios PRIMERO -->
             <div class="mb-6">
-                <img src="assets/Bancor.png" alt="Premios del Sorteo" class="w-full rounded-lg shadow-lg">
+                <img src="assets/bancor.png" alt="Premios del Sorteo" class="w-full rounded-lg shadow-lg">
             </div>
 
             <!-- Título y descripción -->
@@ -907,7 +907,7 @@
         function showResponse(success, data, statusCode) {
             const icon = success ? '✅' : '❌';
             const title = success ? '¡Tu participación fue registrada!' : 'Hubo un problema';
-            
+
             // Extract message from response if it's a success with status 200
             let message = '';
             if (success && statusCode === 200 && typeof data === 'object' && data.mensaje) {
@@ -954,23 +954,23 @@
             if (modal) {
                 modal.remove();
             }
-            
+
             // Reset the form
             document.getElementById('purchaseForm').reset();
             document.getElementById('fileNameAgencia').textContent = 'Hacé clic para subir tu ticket...';
             document.getElementById('fileNameComercio').textContent = 'Hacé clic para subir tu comprobante...';
-            
+
             // Hide both sections
             document.getElementById('seccionAgencia').classList.add('hidden');
             document.getElementById('seccionComercio').classList.add('hidden');
-            
+
             // Remove selected class from radio cards
             document.getElementById('radioAgencia').classList.remove('selected');
             document.getElementById('radioComercio').classList.remove('selected');
-            
+
             // Show the prizes modal again
             document.getElementById('prizesModal').classList.remove('modal-hidden');
-            
+
             // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
