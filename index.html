@@ -418,10 +418,10 @@
                                 <label for="nroSucursal" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Número de Sucursal *
                                 </label>
-                                <input type="text" id="nroSucursal" name="nroSucursal" placeholder="01"
-                                    pattern="[0-9]{2}" maxlength="2"
-                                    class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
-                                <p class="text-xs text-gray-500 mt-1">2 dígitos</p>
+                                <input type="text" id="nroSucursal" name="nroSucursal" value="01 - CASA CENTRAL"
+                                    readonly
+                                    class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 bg-gray-100 cursor-not-allowed" />
+                                <p class="text-xs text-gray-500 mt-1">Sucursal fija</p>
                             </div>
 
                             <div>
@@ -588,9 +588,11 @@
                             <label for="dni" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Número de DNI *
                             </label>
-                            <input type="text" id="dni" name="dni" required placeholder="12345678" pattern="[0-9]{8}" maxlength="8"
+                            <input type="text" id="dni" name="dni" required placeholder="12345678" pattern="[0-9]{8}"
+                                maxlength="8"
                                 class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
-                            <p class="text-xs text-gray-500 mt-1">Exactamente 8 dígitos numéricos, sin puntos ni espacios</p>
+                            <p class="text-xs text-gray-500 mt-1">Exactamente 8 dígitos numéricos, sin puntos ni
+                                espacios</p>
                         </div>
 
                         <div>
@@ -825,9 +827,6 @@
                 // Get gender value
                 const genero = document.querySelector('input[name="sexo"]:checked')?.value || '';
 
-                // Get current datetime for fecha_creacion
-                const fechaCreacion = new Date().toISOString();
-
                 // Build the JSON according to backend schema
                 const jsonData = {
                     tipo: tipoCompra.value, // "agencia" o "comercio"
@@ -836,7 +835,7 @@
                         codigo_area: document.getElementById('codigoArea').value,
                         correo_electronico: document.getElementById('email').value,
                         dni: document.getElementById('dni').value,
-                        fecha_creacion: fechaCreacion,
+
                         fecha_nacimiento: document.getElementById('fechaNacimiento').value,
                         nombre: document.getElementById('nombre').value,
                         genero: genero,
@@ -857,7 +856,7 @@
                     }
 
                     jsonData.agencia = {
-                        fecha_creacion: fechaCreacion,
+
                         foto_ticket: base64Image,
                         foto_tipo: imageType,
                         id_persona: '', // Se puede completar en el backend si es necesario
@@ -867,17 +866,7 @@
                         ocr: document.getElementById('ocr').value
                     };
 
-                    // Add empty compra_comercio object
-                    jsonData.compra_comercio = {
-                        cuit_comercio: '',
-                        fecha_creacion: '',
-                        foto_ticket_factura: '',
-                        foto_ticket_factura_tipo: '',
-                        id_persona: '',
-                        medio_pago: '',
-                        monto_total_compra: '',
-                        numero_ticket_factura: ''
-                    };
+
                 } else {
                     const fileInput = document.getElementById('ticketComercio');
                     const file = fileInput.files[0];
@@ -893,7 +882,7 @@
 
                     jsonData.compra_comercio = {
                         cuit_comercio: document.getElementById('cuitLocal').value,
-                        fecha_creacion: fechaCreacion,
+
                         foto_ticket_factura: base64Image,
                         foto_ticket_factura_tipo: imageType,
                         id_persona: '', // Se puede completar en el backend si es necesario
@@ -902,17 +891,7 @@
                         numero_ticket_factura: document.getElementById('nroComprobante').value
                     };
 
-                    // Add empty agencia object
-                    jsonData.agencia = {
-                        fecha_creacion: '',
-                        foto_ticket: '',
-                        foto_tipo: '',
-                        id_persona: '',
-                        monto_apuesta: '',
-                        nro_agencia: '',
-                        nro_sucursal: '',
-                        ocr: ''
-                    };
+
                 }
 
                 // Log JSON to console for verification
@@ -937,11 +916,18 @@
                     result = await response.text();
                 }
 
-                // Show success message
-                showResponse(true, result, response.status);
+                // Check for error status codes (400 and 500)
+                if (response.status === 400 || response.status === 500) {
+                    // Extract mensaje property from JSON response
+                    const errorMessage = (typeof result === 'object' && result.mensaje)
+                        ? result.mensaje
+                        : 'Ocurrió un error al procesar tu solicitud';
+                    showResponse(false, errorMessage, response.status);
+                } else if (response.ok) {
+                    // Show success message
+                    showResponse(true, result, response.status);
 
-                // Reset form on success
-                if (response.ok) {
+                    // Reset form on success
                     document.getElementById('purchaseForm').reset();
                     document.getElementById('fileNameAgencia').textContent = 'Hacé clic para subir tu ticket...';
                     document.getElementById('fileNameComercio').textContent = 'Hacé clic para subir tu comprobante...';
@@ -949,6 +935,12 @@
                     seccionComercio.classList.add('hidden');
                     document.getElementById('radioAgencia').classList.remove('selected');
                     document.getElementById('radioComercio').classList.remove('selected');
+                } else {
+                    // Handle other error codes
+                    const errorMessage = (typeof result === 'object' && result.mensaje)
+                        ? result.mensaje
+                        : `Error ${response.status}: ${response.statusText}`;
+                    showResponse(false, errorMessage, response.status);
                 }
 
             } catch (error) {
@@ -1039,6 +1031,10 @@
             // Remove selected class from radio cards
             document.getElementById('radioAgencia').classList.remove('selected');
             document.getElementById('radioComercio').classList.remove('selected');
+
+            // Uncheck terms and conditions checkboxes
+            document.getElementById('mayorEdadCheck').checked = false;
+            document.getElementById('terminosCheck').checked = false;
 
             // Show the prizes modal again
             document.getElementById('prizesModal').classList.remove('modal-hidden');
