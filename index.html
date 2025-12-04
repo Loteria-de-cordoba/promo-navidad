@@ -818,6 +818,25 @@
                 return;
             }
 
+            // Validate minimum amounts
+            if (tipoCompra.value === 'agencia') {
+                const montoAgencia = parseFloat(document.getElementById('montoAgencia').value);
+                if (!montoAgencia || montoAgencia < 5000) {
+                    alert('El monto de la apuesta debe ser mayor o igual a $5.000');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '🎉 Enviar mi Participación';
+                    return;
+                }
+            } else {
+                const montoComercio = parseFloat(document.getElementById('monto').value);
+                if (!montoComercio || montoComercio < 30000) {
+                    alert('El monto de la compra debe ser mayor o igual a $30.000');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '🎉 Enviar mi Participación';
+                    return;
+                }
+            }
+
             // Disable button and show loading
             submitBtn.disabled = true;
             submitBtn.innerHTML = 'Enviando...<div class="spinner"></div>';
