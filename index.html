@@ -197,6 +197,52 @@
                 transform: translateX(10px);
             }
         }
+
+        /* Loading Overlay Styles */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-content {
+            text-align: center;
+            background: white;
+            padding: 3rem 4rem;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid #e5e7eb;
+            border-top: 5px solid #3b82f6;
+            border-radius: 50%;
+            margin: 0 auto 1.5rem;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e3a8a;
+            margin-bottom: 0.5rem;
+        }
+
+        .loading-subtext {
+            font-size: 1rem;
+            color: #6b7280;
+        }
     </style>
 </head>
 
@@ -674,11 +720,10 @@
                             <label for="dni" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Número de DNI *
                             </label>
-                            <input type="text" id="dni" name="dni" required placeholder="12345678" pattern="[0-9]{8}"
+                            <input type="text" id="dni" name="dni" required placeholder="12345678" pattern="[0-9]{7,8}"
                                 maxlength="8"
                                 class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
-                            <p class="text-xs text-gray-500 mt-1">Exactamente 8 dígitos numéricos, sin puntos ni
-                                espacios</p>
+                            <p class="text-xs text-gray-500 mt-1">7 u 8 dígitos numéricos, sin puntos ni espacios</p>
                         </div>
 
                         <div>
@@ -751,6 +796,15 @@
 
         <!-- Response Container -->
         <div id="responseContainer" class="hidden fade-in"></div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <h3 class="loading-text">Enviando tu participación...</h3>
+            <p class="loading-subtext">Por favor, esperá un momento</p>
+        </div>
     </div>
 
     <script>
@@ -943,7 +997,7 @@
                 const birthDate = new Date(fechaNacimiento);
 
                 if (birthDate > maxDate) {
-                    alert('⚠️ EDAD MÍNIMA REQUERIDA\n\nDebés ser mayor de 18 años para participar del sorteo.\n\nLa fecha de nacimiento debe ser el 09/12/2007 o anterior.');
+                    alert('⚠️ FECHA NO VÁLIDA\n\nDebés ser mayor de 18 años para participar del sorteo.\n\nLa fecha de nacimiento debe ser el 09/12/2007 o anterior.');
 
                     // Scroll to the birth date field and highlight it
                     const fechaInput = document.getElementById('fechaNacimiento');
@@ -1051,9 +1105,10 @@
                 }
             }
 
-            // Disable button and show loading
+            // Show loading overlay
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.remove('hidden');
             submitBtn.disabled = true;
-            submitBtn.innerHTML = 'Enviando...<div class="spinner"></div>';
             responseContainer.classList.add('hidden');
 
             try {
@@ -1180,9 +1235,9 @@
                 console.error('Error:', error);
                 showResponse(false, error.message);
             } finally {
-                // Re-enable button
+                // Hide loading overlay and re-enable button
+                loadingOverlay.classList.add('hidden');
                 submitBtn.disabled = false;
-                submitBtn.innerHTML = '🎉 Enviar mi Participación';
             }
         });
 
