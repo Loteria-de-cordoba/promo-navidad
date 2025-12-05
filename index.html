@@ -173,6 +173,30 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        /* Shake animation for validation errors */
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            10%,
+            30%,
+            50%,
+            70%,
+            90% {
+                transform: translateX(-10px);
+            }
+
+            20%,
+            40%,
+            60%,
+            80% {
+                transform: translateX(10px);
+            }
+        }
     </style>
 </head>
 
@@ -722,13 +746,13 @@
                     document.getElementById('nroSucursal').required = true;
                     document.getElementById('nroAgencia').required = true;
                     document.getElementById('montoAgencia').required = true;
-                    document.getElementById('ticketAgencia').required = true;
+                    // ticketAgencia is validated manually in submit handler
 
                     // Remove required from comercio
                     document.getElementById('cuitLocal').required = false;
                     document.getElementById('nroComprobante').required = false;
                     document.getElementById('monto').required = false;
-                    document.getElementById('ticketComercio').required = false;
+                    // ticketComercio is validated manually in submit handler
                 } else {
                     document.getElementById('radioComercio').classList.add('selected');
                     seccionComercio.classList.remove('hidden');
@@ -738,14 +762,14 @@
                     document.getElementById('cuitLocal').required = true;
                     document.getElementById('nroComprobante').required = true;
                     document.getElementById('monto').required = true;
-                    document.getElementById('ticketComercio').required = true;
+                    // ticketComercio is validated manually in submit handler
 
                     // Remove required from agencia
                     document.getElementById('ocr').required = false;
                     document.getElementById('nroSucursal').required = false;
                     document.getElementById('nroAgencia').required = false;
                     document.getElementById('montoAgencia').required = false;
-                    document.getElementById('ticketAgencia').required = false;
+                    // ticketAgencia is validated manually in submit handler
                 }
             });
         });
@@ -818,21 +842,92 @@
                 return;
             }
 
-            // Validate minimum amounts
+            // Validate agencia section
             if (tipoCompra.value === 'agencia') {
+                // Validate OCR
+                const ocr = document.getElementById('ocr').value;
+                if (!ocr || ocr.length !== 16) {
+                    alert('Por favor, ingresá el Número OCR completo (16 dígitos)');
+                    return;
+                }
+
+                // Validate agency number
+                const nroAgencia = document.getElementById('nroAgencia').value;
+                if (!nroAgencia || nroAgencia.length !== 5) {
+                    alert('Por favor, ingresá el Número de Agencia completo (5 dígitos)');
+                    return;
+                }
+
+                // Validate amount
                 const montoAgencia = parseFloat(document.getElementById('montoAgencia').value);
                 if (!montoAgencia || montoAgencia < 5000) {
                     alert('El monto de la apuesta debe ser mayor o igual a $5.000');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '🎉 Enviar mi Participación';
+                    return;
+                }
+
+                // Validate image upload
+                const ticketAgencia = document.getElementById('ticketAgencia').files[0];
+                if (!ticketAgencia) {
+                    alert('⚠️ FOTO REQUERIDA\n\nPor favor, subí la foto del ticket de agencia para poder participar del sorteo.\n\nRecordá que es obligatorio adjuntar una imagen clara del ticket.');
+
+                    // Scroll to the file input and highlight it
+                    const fileLabel = document.querySelector('label[for="ticketAgencia"]');
+                    fileLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    fileLabel.style.borderColor = '#ef4444';
+                    fileLabel.style.backgroundColor = '#fee2e2';
+                    fileLabel.style.animation = 'shake 0.5s';
+
+                    // Remove highlight after 3 seconds
+                    setTimeout(() => {
+                        fileLabel.style.borderColor = '';
+                        fileLabel.style.backgroundColor = '';
+                        fileLabel.style.animation = '';
+                    }, 3000);
+
                     return;
                 }
             } else {
+                // Validate comercio section
+                // Validate CUIT
+                const cuitLocal = document.getElementById('cuitLocal').value;
+                if (!cuitLocal || cuitLocal.length !== 13) {
+                    alert('Por favor, ingresá el CUIT del Comercio completo (formato: XX-XXXXXXXX-X)');
+                    return;
+                }
+
+                // Validate ticket number
+                const nroComprobante = document.getElementById('nroComprobante').value;
+                if (!nroComprobante || nroComprobante.length !== 13) {
+                    alert('Por favor, ingresá el Número de Ticket o Factura completo (formato: XXXX-XXXXXXXX)');
+                    return;
+                }
+
+                // Validate amount
                 const montoComercio = parseFloat(document.getElementById('monto').value);
                 if (!montoComercio || montoComercio < 30000) {
                     alert('El monto de la compra debe ser mayor o igual a $30.000');
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = '🎉 Enviar mi Participación';
+                    return;
+                }
+
+                // Validate image upload
+                const ticketComercio = document.getElementById('ticketComercio').files[0];
+                if (!ticketComercio) {
+                    alert('⚠️ FOTO REQUERIDA\n\nPor favor, subí la foto del ticket o factura para poder participar del sorteo.\n\nRecordá que es obligatorio adjuntar una imagen clara del comprobante de compra.');
+
+                    // Scroll to the file input and highlight it
+                    const fileLabel = document.querySelector('label[for="ticketComercio"]');
+                    fileLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    fileLabel.style.borderColor = '#ef4444';
+                    fileLabel.style.backgroundColor = '#fee2e2';
+                    fileLabel.style.animation = 'shake 0.5s';
+
+                    // Remove highlight after 3 seconds
+                    setTimeout(() => {
+                        fileLabel.style.borderColor = '';
+                        fileLabel.style.backgroundColor = '';
+                        fileLabel.style.animation = '';
+                    }, 3000);
+
                     return;
                 }
             }

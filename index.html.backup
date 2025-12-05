@@ -182,17 +182,11 @@
         <div class="modal-content">
             <!-- Imagen de Premios PRIMERO -->
             <div class="mb-6">
-                <img src="assets/Premios.png" alt="Premios del Sorteo" class="w-full rounded-lg shadow-lg">
-            </div>
-
-            <!-- Logo de Lotería de Córdoba -->
-            <div class="mb-4 flex justify-center">
-                <img src="assets/LDC Logotipo COLOR Vertical 300dpi.png" alt="Lotería de Córdoba" class="h-20 md:h-24">
+                <img src="assets/bancor.png" alt="Premios del Sorteo" class="w-full rounded-lg shadow-lg">
             </div>
 
             <!-- Título y descripción -->
             <div class="text-center mb-6">
-
                 <h2 class="text-3xl font-bold text-blue-900 mb-2">¡Participá y Ganá Grandes Premios!</h2>
                 <p class="text-gray-700">¿Te imaginás ganando uno de estos increíbles premios? ¡Ahora es tu
                     oportunidad! Sólo tenés que seguir unos simples pasos para entrar en nuestro sorteo y ser uno de
@@ -209,6 +203,11 @@
             <button id="continuePrizesBtn" class="btn-accept w-full text-white font-bold py-4 px-6 rounded-lg text-lg">
                 🎁 ¡Quiero Participar!
             </button>
+
+            <!-- Logo de Lotería de Córdoba -->
+            <div class="mt-6 flex justify-center">
+                <img src="assets/LDC Logotipo COLOR Vertical 300dpi.png" alt="Lotería de Córdoba" class="h-16 md:h-20">
+            </div>
         </div>
     </div>
 
@@ -221,41 +220,113 @@
                 <p class="text-gray-600">Por favor, leé y aceptá los términos antes de continuar</p>
             </div>
 
-            <div class="bg-gray-50 p-6 rounded-lg mb-6 max-h-64 overflow-y-auto">
-                <h3 class="font-bold text-lg text-blue-900 mb-3">Condiciones de Participación</h3>
-                <ul class="space-y-2 text-gray-700 text-sm">
-                    <li class="flex items-start">
-                        <span class="text-blue-600 mr-2">✓</span>
-                        <span>Podrán participar todas las personas mayores de 18 años que realicen compras en comercios
-                            adheridos o apuestas en agencias de Lotería de Córdoba.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="text-blue-600 mr-2">✓</span>
-                        <span>Para comercios: el monto mínimo de compra debe ser de $30.000.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="text-blue-600 mr-2">✓</span>
-                        <span>Para agencias: el monto mínimo de apuesta debe ser de $5.000.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="text-blue-600 mr-2">✓</span>
-                        <span>Los datos proporcionados serán utilizados únicamente para el sorteo y posterior contacto
-                            con los ganadores.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="text-blue-600 mr-2">✓</span>
-                        <span>Al participar, aceptás que tus datos sean almacenados y procesados según la normativa
-                            vigente de protección de datos personales.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="text-blue-600 mr-2">✓</span>
-                        <span>La promoción es válida durante el período establecido por Lotería de Córdoba.</span>
-                    </li>
-                    <li class="flex items-start">
-                        <span class="text-blue-600 mr-2">✓</span>
-                        <span>Los ganadores serán contactados por los medios proporcionados en el formulario.</span>
-                    </li>
-                </ul>
+            <div class="bg-gray-50 p-6 rounded-lg mb-6 max-h-96 overflow-y-auto">
+                <ol class="space-y-3 text-gray-700 text-xs list-decimal list-inside">
+                    <li>Participarán de los presentes sorteos denominados "SORTEOS PROMOCIONALES "EL CENTRO ESTÁ DE
+                        FIESTA" en adelante la "Promoción", organizada por Gobierno de la Provincia de Córdoba,
+                        Municipalidad de Córdoba, Lotería de la Provincia de Córdoba S.A.U., Bancor y la Cámara de
+                        Comercio de Córdoba (en adelante los "Organizadores"), las personas mayores de 18 años de edad
+                        que entre los días 09 y 25 de diciembre de 2025 adquieran productos en cualquiera de los
+                        comercios y agencias oficiales de Lotería de la Provincia de Córdoba participantes de la
+                        promoción y cuyos tickets/factura de compra alcancen o superen los $25.000 (pesos veinticinco
+                        mil) para el caso de los comercios y tickets iguales o mayores a $5.000 (pesos cinco mil) para
+                        el caso de las agencias oficiales, en adelante los "Participantes".</li>
+                    <li>Los comercios y agencias oficiales participantes, circunscriptos en el área denominada centro de
+                        la ciudad de Córdoba, se encuentran informados en la página web www.loteriadecordoba.com.ar y
+                        contarán para su identificación y localización con piezas gráficas expuestas informando la
+                        promoción.</li>
+                    <li>Para participar en los Sorteos, los "Participantes" que cumplan con los requisitos informados en
+                        el punto 1, deberán escanear un código QR (provisto por el comercio o agencia oficial en el que
+                        realizaron la compra o apuesta) el cual los dirigirá al formulario virtual a completar con los
+                        siguientes datos (Nombre, Apellido, DNI, fecha de nacimiento, Teléfono, e-mail, fecha de la
+                        compra, CUIT del comercio, Nº de ticket/apuesta, monto del ticket/factura, nombre del comercio
+                        donde realizo la compra y carga de fotografía del ticket/factura). Se aceptará la carga de UN
+                        (1) sólo formulario virtual por cada ticket/factura que cumpla con los requisitos informados en
+                        el punto 1.<br>Si el pago se del ticket/factura se realiza por alguno de los medios de pago de
+                        Bancor, el formulario correspondiente tendrá doble chance.<br>Los formularios que no contengan
+                        todos los datos requeridos, los mismos sean erróneos o no cumplan con los requisitos informados
+                        en el punto 1, serán considerados nulos.</li>
+                    <li>La participación en la Promoción implica conocimiento y aceptación sin reservas de estos
+                        términos y condiciones (en adelante las "Bases"), los cuales regirán la totalidad de las
+                        relaciones entre cada Participante y los Organizadores en relación a la Promoción.</li>
+                    <li>El sorteo se llevará a cabo a las 20:00 horas del día 26 de diciembre de 2025 en el salón de
+                        sorteos de Lotería de la Provincia de Córdoba S.A.U con domicilio en calle 27 de Abril 185,
+                        Ciudad de Córdoba. En el mismo se obtendrá 1 (un) ganador y 4 (cuatro) suplentes por cada uno de
+                        los sorteos realizados, para el caso que el ganador no cumpla los requisitos necesarios para la
+                        adjudicación del premio el mismo pasará al primer suplente y así sucesivamente. La modalidad de
+                        sorteo será por método de sistema de búsqueda aleatoria de ganadores "Random".</li>
+                    <li>El resultado del sorteo se comunicará en la página web oficial de Lotería de la Provincia de
+                        Córdoba S.A.U. (www.loteriadecordoba.com.ar). Para acceder al premio, deberán presentarse los
+                        Participantes ganadores en día y lugar indicado en el punto 14 de las presentes Bases, con sus
+                        correspondientes DNI y ticket/factura de compra o apuesta informado.</li>
+                    <li>Premios: primer premio un Automóvil marca Fiat modelo Cronos Like 1.3 MT; segundo premio una
+                        motocicleta marca Motomel modelo Blitz 110; tercer premio un monopatín eléctrico.</li>
+                    <li>Los Ganadores y los Suplentes serán notificados por los Organizadores una vez concluido el
+                        sorteo.</li>
+                    <li>El Premio no incluye ningún otro concepto, bienes o servicios distintos o adicionales al
+                        enunciado específicamente. El Premio es intransferible, y no podrá exigirse su canje por dinero
+                        o por cualquier otro elemento.</li>
+                    <li>Los Organizadores se reservan el derecho, a su exclusivo criterio, de efectuar filmaciones y/o
+                        sesión de fotos protagonizadas por los Participantes (en adelante "las Producciones") y de
+                        publicar en la página web de los Organizadores y/o en cualquier otro medio.</li>
+                    <li>Todo Participante, por el mero hecho de participar en la Promoción autoriza a los Organizadores
+                        a utilizar y/o difundir su nombre, documento, datos personales, voz e imagen, ya sean videos o
+                        fotografías en los medios, soportes y formas que los Organizadores y/o quien éstos designen,
+                        consideren convenientes. En virtud de esta autorización El Ganador no tendrá derecho a
+                        indemnización, pago o contraprestación alguna por la difusión y/o utilización mencionada
+                        precedentemente. La información concerniente a cada Participante, será almacenada por los
+                        Organizadores.</li>
+                    <li>Cualquier tributo, derecho u obligación aplicable como consecuencia de la participación de un
+                        Participante en la Promoción, o la aceptación o entrega del Premio estará a cargo del
+                        Participante.</li>
+                    <li>Los Organizadores se reservan el derecho exclusivo de realizar la acción publicitaria, de
+                        prensa, promoción, publicación y difusión que consideren conveniente del Ganador de la
+                        Promoción.</li>
+                    <li>Los ganadores deberán presentarse en la sede de Lotería de la Provincia de Córdoba S.A.U. cita
+                        en calle 27 de abril 185 de la ciudad de Córdoba y se estipula el día 26 de enero de 2026 a las
+                        13 horas como fecha tope para la presentación de documentación y demás requisitos. Para hacerse
+                        acreedor al premio deberá el ganador contestar correctamente una pregunta de cultura general
+                        ante Escribano Público en Casa Central ó en la Delegación correspondiente.</li>
+                    <li>La eventual declaración de nulidad de alguna de las cláusulas de las presentes Bases no
+                        importará la nulidad de las cláusulas restantes, las que mantendrán su plena vigencia hasta
+                        tanto no sean declaradas nulas por una autoridad facultada por ley a este efecto.</li>
+                    <li>Los Organizadores no responderán por ningún daño o perjuicio que se ocasione a cualquier persona
+                        con motivo o debido a la participación de la misma en la Promoción, en cualquier calidad que la
+                        misma participe, así como a cualquier reclamo o daño relacionado con cualquier aspecto de la
+                        misma, o incluyendo pero sin limitación, aquellos daños vinculados con el acceso y otorgamiento
+                        de cualquiera de los Premios, siempre que dicho daño no sea imputable a la exclusiva culpa grave
+                        o exclusivo dolo del Organizador.</li>
+                    <li>Los Organizadores no será responsable por daños, perjuicios o pérdidas ocasionados al Ganador o
+                        a cualquier otro tercero, en su persona y/o bienes, con motivo o en ocasión de la aceptación,
+                        recepción o utilización del Premio.</li>
+                    <li>Los Organizadores no serán responsables por ningún daño o perjuicio, de cualquier tipo que
+                        fuere, que pudieren sufrir el Ganador o terceros, con motivo de o en relación con el uso del
+                        Premio. Cualquier reclamo que el Participante tenga derecho a realizar en virtud del
+                        producto/servicio adquirido como Premio deberá ser dirigido exclusivamente contra la persona
+                        específica que los deba proveer o haya provisto al Participante el producto/servicio respectivo,
+                        renunciando el Participante a efectuar cualquier tipo de reclamo contra los Organizadores por
+                        cualquier causa vinculada a la calidad del servicio de que se trate.</li>
+                    <li>Los Organizadores no se harán cargo de ningún gasto de traslado del Ganador desde y hacia el
+                        lugar de entrega del premio. Cualquier costo y/o gasto en que los Participantes deban incurrir
+                        para participar de la Promoción y/o para hacerse acreedores del Premio será a su exclusiva
+                        cuenta.</li>
+                    <li>La participación en esta Promoción implica el total conocimiento y aceptación de las Bases así
+                        como de las decisiones que adopte los Organizadores con relación a cualquier cuestión no
+                        prevista en las Bases.</li>
+                    <li>Los Organizadores determinarán con carácter inapelable, el criterio a aplicar en cualquier
+                        situación no prevista expresamente en las presentes bases, siendo la única entidad
+                        interpretativa de las mismas, reservándose los derechos para efectuar cualquier tipo de
+                        modificación en la realización de la presente Promoción y de extenderlo o suspenderlo a su solo
+                        arbitrio, si así lo considerara, sin previo aviso y sin derecho a reclamo alguno por parte de
+                        los participantes, siendo sus decisiones inapelables.</li>
+                    <li>Toda relación que en virtud de la Promoción se genere entre cualquier Participante y los
+                        Organizadores será regida y concertada con total sujeción a las leyes de la República Argentina,
+                        renunciando el Participante a cualquier otra ley a cuya aplicación pudiera tener derecho.
+                        Asimismo, resultarán competentes para dirimir cualquier controversia o procedimiento legal que
+                        surja entre el Organizador y el Participante los Tribunales Ordinarios de la Provincia de
+                        Córdoba, cualquiera sea la causa de la acción o el reclamo, con renuncia expresa por parte suya
+                        a cualquier otra jurisdicción que pudiera corresponderle.</li>
+                </ol>
             </div>
 
             <div class="space-y-4">
@@ -283,16 +354,18 @@
 
     <div class="max-w-3xl mx-auto">
         <!-- Header -->
-        <div class="text-center mb-8 fade-in">
-            <div class="mb-4 flex justify-center">
+        <div class="mb-8 fade-in">
+            <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-4">
                 <img src="assets/LDC Logotipo BLANCO+COLOR Vertical 300dpi.png" alt="Loteria de Córdoba"
-                    class="h-32 md:h-40">
+                    class="h-20 md:h-24">
+                <h1 class="text-2xl md:text-4xl font-bold text-white text-center">EL CENTRO ESTÁ DE FIESTA</h1>
             </div>
-            <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">EL CENTRO ESTÁ DE FIESTA</h1>
-            <p class="text-white text-lg opacity-90">Completá tus datos y participá del sorteo</p>
-            <p class="text-white text-xl font-semibold mt-3">🎁 Sorteo: 26 de Diciembre a las 20 hs 🎁</p>
-            <p class="text-white text-md opacity-90 mt-2">📍Te esperamos en Lotería de Córdoba Casa Central - 27 de
-                Abril 185</p>
+            <div class="text-center">
+                <p class="text-white text-lg opacity-90">Completá tus datos y participá del sorteo</p>
+                <p class="text-white text-xl font-semibold mt-3">🎁 Sorteo: 26 de Diciembre a las 20 hs 🎁</p>
+                <p class="text-white text-md opacity-90 mt-2">📍Te esperamos en Lotería de Córdoba Casa Central - 27 de
+                    Abril 185</p>
+            </div>
         </div>
 
         <!-- Form Container -->
@@ -345,10 +418,10 @@
                                 <label for="nroSucursal" class="block text-sm font-semibold text-gray-700 mb-2">
                                     Número de Sucursal *
                                 </label>
-                                <input type="text" id="nroSucursal" name="nroSucursal" placeholder="01"
-                                    pattern="[0-9]{2}" maxlength="2"
-                                    class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
-                                <p class="text-xs text-gray-500 mt-1">2 dígitos</p>
+                                <input type="text" id="nroSucursal" name="nroSucursal" value="01 - CASA CENTRAL"
+                                    readonly
+                                    class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 bg-gray-100 cursor-not-allowed" />
+                                <p class="text-xs text-gray-500 mt-1">Sucursal fija</p>
                             </div>
 
                             <div>
@@ -515,9 +588,11 @@
                             <label for="dni" class="block text-sm font-semibold text-gray-700 mb-2">
                                 Número de DNI *
                             </label>
-                            <input type="text" id="dni" name="dni" required placeholder="12345678" pattern="[0-9]{7,8}"
+                            <input type="text" id="dni" name="dni" required placeholder="12345678" pattern="[0-9]{8}"
+                                maxlength="8"
                                 class="input-field w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:outline-none focus:border-blue-500" />
-                            <p class="text-xs text-gray-500 mt-1">Sólo números, sin puntos ni espacios</p>
+                            <p class="text-xs text-gray-500 mt-1">Exactamente 8 dígitos numéricos, sin puntos ni
+                                espacios</p>
                         </div>
 
                         <div>
@@ -743,70 +818,103 @@
                 return;
             }
 
+            // Validate minimum amounts
+            if (tipoCompra.value === 'agencia') {
+                const montoAgencia = parseFloat(document.getElementById('montoAgencia').value);
+                if (!montoAgencia || montoAgencia < 5000) {
+                    alert('El monto de la apuesta debe ser mayor o igual a $5.000');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '🎉 Enviar mi Participación';
+                    return;
+                }
+            } else {
+                const montoComercio = parseFloat(document.getElementById('monto').value);
+                if (!montoComercio || montoComercio < 30000) {
+                    alert('El monto de la compra debe ser mayor o igual a $30.000');
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '🎉 Enviar mi Participación';
+                    return;
+                }
+            }
+
             // Disable button and show loading
             submitBtn.disabled = true;
             submitBtn.innerHTML = 'Enviando...<div class="spinner"></div>';
             responseContainer.classList.add('hidden');
 
             try {
-                // Get form data
-                const formData = new FormData();
+                // Get gender value
+                const genero = document.querySelector('input[name="sexo"]:checked')?.value || '';
 
-                // Add purchase type
-                formData.append('tipoCompra', tipoCompra.value);
+                // Build the JSON according to backend schema
+                const jsonData = {
+                    tipo: tipoCompra.value, // "agencia" o "comercio"
+                    persona: {
+                        apellido: document.getElementById('apellido').value,
+                        codigo_area: document.getElementById('codigoArea').value,
+                        correo_electronico: document.getElementById('email').value,
+                        dni: document.getElementById('dni').value,
 
-                // Add fields based on purchase type
+                        fecha_nacimiento: document.getElementById('fechaNacimiento').value,
+                        nombre: document.getElementById('nombre').value,
+                        genero: genero,
+                        telefono: document.getElementById('telefono').value
+                    }
+                };
+
+                // Add agencia or compra_comercio based on tipo
                 if (tipoCompra.value === 'agencia') {
-                    formData.append('ocr', document.getElementById('ocr').value);
-                    formData.append('nroSucursal', document.getElementById('nroSucursal').value);
-                    formData.append('nroAgencia', document.getElementById('nroAgencia').value);
-                    formData.append('montoAgencia', document.getElementById('montoAgencia').value);
-
-                    // Handle file upload for agencia
                     const fileInput = document.getElementById('ticketAgencia');
                     const file = fileInput.files[0];
+                    let base64Image = '';
+                    let imageType = '';
+
                     if (file) {
-                        const base64 = await fileToBase64(file);
-                        formData.append('ticketBase64', base64);
-                        formData.append('ticketFileName', file.name);
-                        formData.append('ticketContentType', file.type);
+                        base64Image = await fileToBase64(file);
+                        imageType = file.type;
                     }
+
+                    jsonData.agencia = {
+
+                        foto_ticket: base64Image,
+                        foto_tipo: imageType,
+                        id_persona: '', // Se puede completar en el backend si es necesario
+                        monto_apuesta: document.getElementById('montoAgencia').value.toString(),
+                        nro_agencia: document.getElementById('nroAgencia').value,
+                        nro_sucursal: document.getElementById('nroSucursal').value,
+                        ocr: document.getElementById('ocr').value
+                    };
+
+
                 } else {
-                    formData.append('cuitLocal', document.getElementById('cuitLocal').value);
-                    formData.append('nroComprobante', document.getElementById('nroComprobante').value);
-                    formData.append('monto', document.getElementById('monto').value);
-
-                    // Agregar medio de pago si está seleccionado
-                    const medioPago = document.querySelector('input[name="medioPago"]:checked');
-                    if (medioPago) {
-                        formData.append('medioPago', medioPago.value);
-                    }
-
-                    // Handle file upload for comercio
                     const fileInput = document.getElementById('ticketComercio');
                     const file = fileInput.files[0];
+                    let base64Image = '';
+                    let imageType = '';
+
                     if (file) {
-                        const base64 = await fileToBase64(file);
-                        formData.append('ticketBase64', base64);
-                        formData.append('ticketFileName', file.name);
-                        formData.append('ticketContentType', file.type);
+                        base64Image = await fileToBase64(file);
+                        imageType = file.type;
                     }
+
+                    const medioPago = document.querySelector('input[name="medioPago"]:checked');
+
+                    jsonData.compra_comercio = {
+                        cuit_comercio: document.getElementById('cuitLocal').value,
+
+                        foto_ticket_factura: base64Image,
+                        foto_ticket_factura_tipo: imageType,
+                        id_persona: '', // Se puede completar en el backend si es necesario
+                        medio_pago: medioPago ? medioPago.value : '',
+                        monto_total_compra: document.getElementById('monto').value.toString(),
+                        numero_ticket_factura: document.getElementById('nroComprobante').value
+                    };
+
+
                 }
 
-                // Add personal data (always required)
-                formData.append('nombre', document.getElementById('nombre').value);
-                formData.append('apellido', document.getElementById('apellido').value);
-                formData.append('dni', document.getElementById('dni').value);
-                formData.append('fechaNacimiento', document.getElementById('fechaNacimiento').value);
-                formData.append('codigoArea', document.getElementById('codigoArea').value);
-                formData.append('telefono', document.getElementById('telefono').value);
-                formData.append('email', document.getElementById('email').value);
-
-                // Convert FormData to JSON for Power Automate
-                const jsonData = {};
-                for (let [key, value] of formData.entries()) {
-                    jsonData[key] = value;
-                }
+                // Log JSON to console for verification
+                console.log('Datos a enviar:', JSON.stringify(jsonData, null, 2));
 
                 // Send to Power Automate
                 const response = await fetch('https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com/powerautomate/automations/direct/workflows/086daf758a8b42739f70ac64a995c20a/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=IQB14siZevuLtO31WjZyvy4bove60j0oYJckZpLXFUM', {
@@ -827,11 +935,18 @@
                     result = await response.text();
                 }
 
-                // Show success message
-                showResponse(true, result, response.status);
+                // Check for error status codes (400 and 500)
+                if (response.status === 400 || response.status === 500) {
+                    // Extract mensaje property from JSON response
+                    const errorMessage = (typeof result === 'object' && result.mensaje)
+                        ? result.mensaje
+                        : 'Ocurrió un error al procesar tu solicitud';
+                    showResponse(false, errorMessage, response.status);
+                } else if (response.ok) {
+                    // Show success message
+                    showResponse(true, result, response.status);
 
-                // Reset form on success
-                if (response.ok) {
+                    // Reset form on success
                     document.getElementById('purchaseForm').reset();
                     document.getElementById('fileNameAgencia').textContent = 'Hacé clic para subir tu ticket...';
                     document.getElementById('fileNameComercio').textContent = 'Hacé clic para subir tu comprobante...';
@@ -839,6 +954,12 @@
                     seccionComercio.classList.add('hidden');
                     document.getElementById('radioAgencia').classList.remove('selected');
                     document.getElementById('radioComercio').classList.remove('selected');
+                } else {
+                    // Handle other error codes
+                    const errorMessage = (typeof result === 'object' && result.mensaje)
+                        ? result.mensaje
+                        : `Error ${response.status}: ${response.statusText}`;
+                    showResponse(false, errorMessage, response.status);
                 }
 
             } catch (error) {
@@ -865,32 +986,80 @@
             });
         }
 
-        // Show response message
+        // Show response message in modal
         function showResponse(success, data, statusCode) {
-            const responseContainer = document.getElementById('responseContainer');
-            const bgClass = success ? 'success-box' : 'error-box';
             const icon = success ? '✅' : '❌';
             const title = success ? '¡Tu participación fue registrada!' : 'Hubo un problema';
 
-            let dataDisplay = '';
-            if (typeof data === 'object') {
-                dataDisplay = `<pre class="bg-white bg-opacity-30 p-4 rounded-lg overflow-auto text-sm mt-4">${JSON.stringify(data, null, 2)}</pre>`;
+            // Extract message from response if it's a success with status 200
+            let message = '';
+            if (success && statusCode === 200 && typeof data === 'object' && data.mensaje) {
+                message = data.mensaje;
+            } else if (typeof data === 'object') {
+                message = JSON.stringify(data, null, 2);
             } else {
-                dataDisplay = `<p class="mt-4 text-white">${data}</p>`;
+                message = data;
             }
 
-            responseContainer.innerHTML = `
-                <div class="${bgClass} rounded-2xl p-6 md:p-8 text-center">
-                    <div class="text-6xl mb-4">${icon}</div>
-                    <h3 class="text-2xl font-bold text-white mb-2">${title}</h3>
-                    ${statusCode ? `<p class="text-white opacity-90 mb-2">Código de respuesta: ${statusCode}</p>` : ''}
-                    ${dataDisplay}
-                    ${success ? '<p class="text-white mt-4 text-lg">¡Muchas gracias por participar! Te contactaremos en caso de resultar ganador/a.</p>' : '<p class="text-white mt-4">Por favor, revisá los datos e intentá nuevamente.</p>'}
+            // Create modal HTML
+            const modalHTML = `
+                <div class="modal-overlay" id="responseModal">
+                    <div class="modal-content">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4">${icon}</div>
+                            <h2 class="text-3xl font-bold text-blue-900 mb-2">${title}</h2>
+                            ${success && statusCode === 200 ? `
+                                <div class="bg-green-50 p-6 rounded-lg mb-6">
+                                    <p class="text-gray-700 text-lg">${message}</p>
+                                    <p class="text-gray-700 mt-4 font-semibold">¡Muchas gracias por participar! Te contactaremos en caso de resultar ganador/a.</p>
+                                </div>
+                            ` : `
+                                <div class="bg-red-50 p-6 rounded-lg mb-6">
+                                    <p class="text-gray-700">${message}</p>
+                                    <p class="text-gray-700 mt-4 font-semibold">Por favor, revisá los datos e intentá nuevamente.</p>
+                                </div>
+                            `}
+                        </div>
+                        <button onclick="closeResponseModal()" class="btn-accept w-full text-white font-bold py-4 px-6 rounded-lg text-lg">
+                            Cerrar
+                        </button>
+                    </div>
                 </div>
             `;
 
-            responseContainer.classList.remove('hidden');
-            responseContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // Close response modal and restart the form
+        function closeResponseModal() {
+            const modal = document.getElementById('responseModal');
+            if (modal) {
+                modal.remove();
+            }
+
+            // Reset the form
+            document.getElementById('purchaseForm').reset();
+            document.getElementById('fileNameAgencia').textContent = 'Hacé clic para subir tu ticket...';
+            document.getElementById('fileNameComercio').textContent = 'Hacé clic para subir tu comprobante...';
+
+            // Hide both sections
+            document.getElementById('seccionAgencia').classList.add('hidden');
+            document.getElementById('seccionComercio').classList.add('hidden');
+
+            // Remove selected class from radio cards
+            document.getElementById('radioAgencia').classList.remove('selected');
+            document.getElementById('radioComercio').classList.remove('selected');
+
+            // Uncheck terms and conditions checkboxes
+            document.getElementById('mayorEdadCheck').checked = false;
+            document.getElementById('terminosCheck').checked = false;
+
+            // Show the prizes modal again
+            document.getElementById('prizesModal').classList.remove('modal-hidden');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
     </script>
 </body>
