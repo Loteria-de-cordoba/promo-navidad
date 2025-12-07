@@ -793,6 +793,12 @@
                     class="btn-submit w-full text-white font-bold py-4 px-6 rounded-lg text-lg">
                     🎉 Enviar mi Participación
                 </button>
+
+                <!-- Contact Button -->
+                <button type="button" id="contactBtn"
+                    class="w-full text-blue-900 font-semibold py-3 px-6 rounded-lg text-base border-2 border-blue-900 hover:bg-blue-50 transition-all mt-4">
+                    📧 Si no puede enviar correctamente sus datos contáctese con nosotros
+                </button>
             </form>
         </div>
 
@@ -1332,6 +1338,394 @@
             // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+
+        // Handle contact button click
+        document.getElementById('contactBtn').addEventListener('click', function () {
+            // Get form data
+            const tipoCompra = document.querySelector('input[name="tipoCompra"]:checked');
+            const genero = document.querySelector('input[name="sexo"]:checked');
+
+            // Build email body with form data
+            let emailBody = 'DATOS DEL FORMULARIO - EL CENTRO ESTÁ DE FIESTA\n\n';
+            emailBody += '=== DATOS PERSONALES ===\n';
+            emailBody += `Nombre: ${document.getElementById('nombre').value || 'No ingresado'}\n`;
+            emailBody += `Apellido: ${document.getElementById('apellido').value || 'No ingresado'}\n`;
+            emailBody += `DNI: ${document.getElementById('dni').value || 'No ingresado'}\n`;
+            emailBody += `Género: ${genero ? (genero.value === 'M' ? 'Masculino' : 'Femenino') : 'No seleccionado'}\n`;
+            emailBody += `Fecha de Nacimiento: ${document.getElementById('fechaNacimiento').value || 'No ingresada'}\n`;
+            emailBody += `Código de Área: ${document.getElementById('codigoArea').value || 'No ingresado'}\n`;
+            emailBody += `Teléfono: ${document.getElementById('telefono').value || 'No ingresado'}\n`;
+            emailBody += `Email: ${document.getElementById('email').value || 'No ingresado'}\n\n`;
+
+            emailBody += '=== TIPO DE COMPRA ===\n';
+            emailBody += `Tipo: ${tipoCompra ? (tipoCompra.value === 'agencia' ? 'Agencia' : 'Comercio') : 'No seleccionado'}\n\n`;
+
+            if (tipoCompra && tipoCompra.value === 'agencia') {
+                emailBody += '=== DATOS DE AGENCIA ===\n';
+                emailBody += `Número OCR: ${document.getElementById('ocr').value || 'No ingresado'}\n`;
+                emailBody += `Número de Sucursal: ${document.getElementById('nroSucursal').value || 'No ingresado'}\n`;
+                emailBody += `Número de Agencia: ${document.getElementById('nroAgencia').value || 'No ingresado'}\n`;
+                emailBody += `Monto de Apuesta: $${document.getElementById('montoAgencia').value || 'No ingresado'}\n`;
+                const ticketAgencia = document.getElementById('ticketAgencia').files[0];
+                emailBody += `Foto del Ticket: ${ticketAgencia ? ticketAgencia.name : 'No adjuntada (deberá adjuntarla al email)'}\n`;
+            } else if (tipoCompra && tipoCompra.value === 'comercio') {
+                emailBody += '=== DATOS DE COMERCIO ===\n';
+                emailBody += `CUIT del Comercio: ${document.getElementById('cuitLocal').value || 'No ingresado'}\n`;
+                emailBody += `Número de Ticket/Factura: ${document.getElementById('nroComprobante').value || 'No ingresado'}\n`;
+                emailBody += `Monto Total: $${document.getElementById('monto').value || 'No ingresado'}\n`;
+                const medioPago = document.querySelector('input[name="medioPago"]:checked');
+                emailBody += `Medio de Pago: ${medioPago ? (medioPago.value === 'bancor' ? 'Bancor' : 'Otros') : 'No seleccionado'}\n`;
+                const ticketComercio = document.getElementById('ticketComercio').files[0];
+                emailBody += `Foto del Ticket/Factura: ${ticketComercio ? ticketComercio.name : 'No adjuntada (deberá adjuntarla al email)'}\n`;
+            }
+
+            emailBody += '\n\nNOTA: Si adjuntó una foto del ticket/factura en el formulario, por favor adjúntela también a este email.\n';
+
+            // Show modal with email data
+            showContactModal(emailBody);
+        });
+
+        // Show contact modal with email data
+        function showContactModal(emailBody) {
+            const subject = 'Formulario EL CENTRO ESTÁ DE FIESTA';
+            const emailAddress = 'mesadeayuda@loteriacba.com.ar';
+
+            // Create modal HTML
+            const modalHTML = `
+                <div class="modal-overlay" id="contactModal">
+                    <div class="modal-content" style="max-width: 700px;">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4">📧</div>
+                            <h2 class="text-3xl font-bold text-blue-900 mb-2">Contacto por Email</h2>
+                            <p class="text-gray-600">Copiá los datos y envialos por correo electrónico</p>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                            <p class="text-sm font-semibold text-blue-900 mb-2">📮 Destinatario:</p>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="emailAddressField" value="${emailAddress}" readonly 
+                                    class="flex-1 px-3 py-2 border-2 border-blue-300 rounded bg-white text-gray-700 font-mono text-sm">
+                                <button onclick="copyToClipboard('emailAddressField', this)" 
+                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-semibold">
+                                    📋 Copiar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 p-4 rounded-lg mb-4">
+                            <p class="text-sm font-semibold text-green-900 mb-2">📝 Asunto:</p>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="emailSubjectField" value="${subject}" readonly 
+                                    class="flex-1 px-3 py-2 border-2 border-green-300 rounded bg-white text-gray-700 text-sm">
+                                <button onclick="copyToClipboard('emailSubjectField', this)" 
+                                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm font-semibold">
+                                    📋 Copiar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                            <p class="text-sm font-semibold text-gray-900 mb-2">💬 Mensaje:</p>
+                            <textarea id="emailBodyField" readonly 
+                                class="w-full px-3 py-2 border-2 border-gray-300 rounded bg-white text-gray-700 font-mono text-xs h-64 mb-2">${emailBody}</textarea>
+                            <button onclick="copyToClipboard('emailBodyField', this)" 
+                                class="w-full px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors text-sm font-semibold">
+                                📋 Copiar Mensaje
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            <a href="mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}" 
+                                class="block w-full text-center px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-bold">
+                                📧 Abrir en mi Cliente de Correo
+                            </a>
+                            <button onclick="closeContactModal()" 
+                                class="w-full px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-semibold">
+                                Cerrar
+                            </button>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+                            <p class="text-xs text-yellow-800">
+                                💡 <strong>Tip:</strong> Si el botón "Abrir en mi Cliente de Correo" no funciona, podés copiar manualmente el destinatario, asunto y mensaje usando los botones de copiar, y luego pegarlos en tu aplicación de correo (Gmail, Outlook, etc.)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // Copy to clipboard function
+        function copyToClipboard(elementId, button) {
+            const element = document.getElementById(elementId);
+            element.select();
+            element.setSelectionRange(0, 99999); // For mobile devices
+
+            try {
+                document.execCommand('copy');
+                const originalText = button.innerHTML;
+                button.innerHTML = '✅ Copiado!';
+                button.style.backgroundColor = '#10b981';
+
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.backgroundColor = '';
+                }, 2000);
+            } catch (err) {
+                alert('No se pudo copiar automáticamente. Por favor, seleccioná y copiá manualmente.');
+            }
+        }
+
+        // Close contact modal
+        function closeContactModal() {
+            const modal = document.getElementById('contactModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+
+        // Convert file to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    // Remove the data:image/xxx;base64, prefix
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Show response message in modal
+        function showResponse(success, data, statusCode) {
+            const icon = success ? '✅' : '❌';
+            const title = success ? '¡Tu participación fue registrada!' : 'Hubo un problema';
+
+            // Extract message from response if it's a success with status 200
+            let message = '';
+            if (success && statusCode === 200 && typeof data === 'object' && data.mensaje) {
+                message = data.mensaje;
+            } else if (typeof data === 'object') {
+                message = JSON.stringify(data, null, 2);
+            } else {
+                message = data;
+            }
+
+            // Create modal HTML
+            const modalHTML = `
+                <div class="modal-overlay" id="responseModal">
+                    <div class="modal-content">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4">${icon}</div>
+                            <h2 class="text-3xl font-bold text-blue-900 mb-2">${title}</h2>
+                            ${success && statusCode === 200 ? `
+                                <div class="bg-green-50 p-6 rounded-lg mb-6">
+                                    <p class="text-gray-700 text-lg">${message}</p>
+                                    <p class="text-gray-700 mt-4 font-semibold">¡Muchas gracias por participar! Te contactaremos en caso de resultar ganador/a.</p>
+                                </div>
+                            ` : `
+                                <div class="bg-red-50 p-6 rounded-lg mb-6">
+                                    <p class="text-gray-700">${message}</p>
+                                    <p class="text-gray-700 mt-4 font-semibold">Por favor, revisá los datos e intentá nuevamente.</p>
+                                </div>
+                            `}
+                        </div>
+                        <button onclick="closeResponseModal()" class="btn-accept w-full text-white font-bold py-4 px-6 rounded-lg text-lg">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // Close response modal and restart the form
+        function closeResponseModal() {
+            const modal = document.getElementById('responseModal');
+            if (modal) {
+                modal.remove();
+            }
+
+            // Reset the form
+            document.getElementById('purchaseForm').reset();
+            document.getElementById('fileNameAgencia').textContent = 'Hacé clic para subir tu ticket...';
+            document.getElementById('fileNameComercio').textContent = 'Hacé clic para subir tu comprobante...';
+
+            // Hide both sections
+            document.getElementById('seccionAgencia').classList.add('hidden');
+            document.getElementById('seccionComercio').classList.add('hidden');
+
+            // Remove selected class from radio cards
+            document.getElementById('radioAgencia').classList.remove('selected');
+            document.getElementById('radioComercio').classList.remove('selected');
+
+            // Uncheck terms and conditions checkboxes
+            document.getElementById('mayorEdadCheck').checked = false;
+            document.getElementById('terminosCheck').checked = false;
+
+            // Show the prizes modal again
+            document.getElementById('prizesModal').classList.remove('modal-hidden');
+
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Handle contact button click
+        document.getElementById('contactBtn').addEventListener('click', function () {
+            // Get form data
+            const tipoCompra = document.querySelector('input[name="tipoCompra"]:checked');
+            const genero = document.querySelector('input[name="sexo"]:checked');
+
+            // Build email body with form data
+            let emailBody = 'DATOS DEL FORMULARIO - EL CENTRO ESTÁ DE FIESTA\n\n';
+            emailBody += '=== DATOS PERSONALES ===\n';
+            emailBody += `Nombre: ${document.getElementById('nombre').value || 'No ingresado'}\n`;
+            emailBody += `Apellido: ${document.getElementById('apellido').value || 'No ingresado'}\n`;
+            emailBody += `DNI: ${document.getElementById('dni').value || 'No ingresado'}\n`;
+            emailBody += `Género: ${genero ? (genero.value === 'M' ? 'Masculino' : 'Femenino') : 'No seleccionado'}\n`;
+            emailBody += `Fecha de Nacimiento: ${document.getElementById('fechaNacimiento').value || 'No ingresada'}\n`;
+            emailBody += `Código de Área: ${document.getElementById('codigoArea').value || 'No ingresado'}\n`;
+            emailBody += `Teléfono: ${document.getElementById('telefono').value || 'No ingresado'}\n`;
+            emailBody += `Email: ${document.getElementById('email').value || 'No ingresado'}\n\n`;
+
+            emailBody += '=== TIPO DE COMPRA ===\n';
+            emailBody += `Tipo: ${tipoCompra ? (tipoCompra.value === 'agencia' ? 'Agencia' : 'Comercio') : 'No seleccionado'}\n\n`;
+
+            if (tipoCompra && tipoCompra.value === 'agencia') {
+                emailBody += '=== DATOS DE AGENCIA ===\n';
+                emailBody += `Número OCR: ${document.getElementById('ocr').value || 'No ingresado'}\n`;
+                emailBody += `Número de Sucursal: ${document.getElementById('nroSucursal').value || 'No ingresado'}\n`;
+                emailBody += `Número de Agencia: ${document.getElementById('nroAgencia').value || 'No ingresado'}\n`;
+                emailBody += `Monto de Apuesta: $${document.getElementById('montoAgencia').value || 'No ingresado'}\n`;
+                const ticketAgencia = document.getElementById('ticketAgencia').files[0];
+                emailBody += `Foto del Ticket: ${ticketAgencia ? ticketAgencia.name : 'No adjuntada (deberá adjuntarla al email)'}\n`;
+            } else if (tipoCompra && tipoCompra.value === 'comercio') {
+                emailBody += '=== DATOS DE COMERCIO ===\n';
+                emailBody += `CUIT del Comercio: ${document.getElementById('cuitLocal').value || 'No ingresado'}\n`;
+                emailBody += `Número de Ticket/Factura: ${document.getElementById('nroComprobante').value || 'No ingresado'}\n`;
+                emailBody += `Monto Total: $${document.getElementById('monto').value || 'No ingresado'}\n`;
+                const medioPago = document.querySelector('input[name="medioPago"]:checked');
+                emailBody += `Medio de Pago: ${medioPago ? (medioPago.value === 'bancor' ? 'Bancor' : 'Otros') : 'No seleccionado'}\n`;
+                const ticketComercio = document.getElementById('ticketComercio').files[0];
+                emailBody += `Foto del Ticket/Factura: ${ticketComercio ? ticketComercio.name : 'No adjuntada (deberá adjuntarla al email)'}\n`;
+            }
+
+            emailBody += '\n\nNOTA: Si adjuntó una foto del ticket/factura en el formulario, por favor adjúntela también a este email.\n';
+
+            // Show modal with email data
+            showContactModal(emailBody);
+        });
+
+        // Show contact modal with email data
+        function showContactModal(emailBody) {
+            const subject = 'Formulario EL CENTRO ESTÁ DE FIESTA';
+            const emailAddress = 'mesadeayuda@loteriacba.com.ar';
+
+            // Create modal HTML
+            const modalHTML = `
+                <div class="modal-overlay" id="contactModal">
+                    <div class="modal-content" style="max-width: 700px;">
+                        <div class="text-center mb-6">
+                            <div class="text-6xl mb-4">📧</div>
+                            <h2 class="text-3xl font-bold text-blue-900 mb-2">Contacto por Email</h2>
+                            <p class="text-gray-600">Copiá los datos y envialos por correo electrónico</p>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                            <p class="text-sm font-semibold text-blue-900 mb-2">📮 Destinatario:</p>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="emailAddressField" value="${emailAddress}" readonly 
+                                    class="flex-1 px-3 py-2 border-2 border-blue-300 rounded bg-white text-gray-700 font-mono text-sm">
+                                <button onclick="copyToClipboard('emailAddressField', this)" 
+                                    class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors text-sm font-semibold">
+                                    📋 Copiar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-green-50 p-4 rounded-lg mb-4">
+                            <p class="text-sm font-semibold text-green-900 mb-2">📝 Asunto:</p>
+                            <div class="flex items-center gap-2">
+                                <input type="text" id="emailSubjectField" value="${subject}" readonly 
+                                    class="flex-1 px-3 py-2 border-2 border-green-300 rounded bg-white text-gray-700 text-sm">
+                                <button onclick="copyToClipboard('emailSubjectField', this)" 
+                                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition-colors text-sm font-semibold">
+                                    📋 Copiar
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                            <p class="text-sm font-semibold text-gray-900 mb-2">💬 Mensaje:</p>
+                            <textarea id="emailBodyField" readonly 
+                                class="w-full px-3 py-2 border-2 border-gray-300 rounded bg-white text-gray-700 font-mono text-xs h-64 mb-2">${emailBody}</textarea>
+                            <button onclick="copyToClipboard('emailBodyField', this)" 
+                                class="w-full px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700 transition-colors text-sm font-semibold">
+                                📋 Copiar Mensaje
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            <a href="mailto:${emailAddress}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(emailBody)}" 
+                                class="block w-full text-center px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-lg font-bold">
+                                📧 Abrir en mi Cliente de Correo
+                            </a>
+                            <button onclick="closeContactModal()" 
+                                class="w-full px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors font-semibold">
+                                Cerrar
+                            </button>
+                        </div>
+
+                        <div class="mt-4 p-3 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+                            <p class="text-xs text-yellow-800">
+                                💡 <strong>Tip:</strong> Si el botón "Abrir en mi Cliente de Correo" no funciona, podés copiar manualmente el destinatario, asunto y mensaje usando los botones de copiar, y luego pegarlos en tu aplicación de correo (Gmail, Outlook, etc.)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Add modal to body
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        }
+
+        // Copy to clipboard function
+        function copyToClipboard(elementId, button) {
+            const element = document.getElementById(elementId);
+            element.select();
+            element.setSelectionRange(0, 99999); // For mobile devices
+
+            try {
+                document.execCommand('copy');
+                const originalText = button.innerHTML;
+                button.innerHTML = '✅ Copiado!';
+                button.style.backgroundColor = '#10b981';
+
+                setTimeout(() => {
+                    button.innerHTML = originalText;
+                    button.style.backgroundColor = '';
+                }, 2000);
+            } catch (err) {
+                alert('No se pudo copiar automáticamente. Por favor, seleccioná y copiá manualmente.');
+            }
+        }
+
+        // Close contact modal
+        function closeContactModal() {
+            const modal = document.getElementById('contactModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
     </script>
 </body>
 
