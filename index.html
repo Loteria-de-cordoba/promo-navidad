@@ -601,7 +601,7 @@
                                         ticket...</span>
                                 </label>
                             </div>
-                            <p class="text-xs text-gray-500 mt-1">Aceptamos JPG, PNG o WebP</p>
+                            <p class="text-xs text-gray-500 mt-1">Aceptamos JPG, PNG o WebP (máximo 8 MB)</p>
                         </div>
                     </div>
                 </div>
@@ -688,7 +688,7 @@
                                         comprobante...</span>
                                 </label>
                             </div>
-                            <p class="text-xs text-gray-500 mt-1">Aceptamos JPG, PNG o WebP</p>
+                            <p class="text-xs text-gray-500 mt-1">Aceptamos JPG, PNG o WebP (máximo 8 MB)</p>
                         </div>
                     </div>
                 </div>
@@ -930,10 +930,45 @@
             });
         });
 
-        // Update file name display
+        // Update file name display with size validation
         function updateFileName(input, spanId) {
-            const fileName = input.files[0]?.name || 'Hacé clic para subir tu comprobante...';
-            document.getElementById(spanId).textContent = fileName;
+            const file = input.files[0];
+            const maxSize = 8 * 1024 * 1024; // 8MB in bytes
+
+            if (!file) {
+                document.getElementById(spanId).textContent = 'Hacé clic para subir tu comprobante...';
+                return;
+            }
+
+            // Check file size
+            if (file.size > maxSize) {
+                // Show error alert
+                alert('⚠️ ARCHIVO MUY GRANDE\n\nLa imagen que intentás subir supera el tamaño máximo permitido.\n\nTamaño del archivo: ' + (file.size / 1024 / 1024).toFixed(2) + ' MB\nTamaño máximo: 8 MB\n\nPor favor, seleccioná una imagen más pequeña o comprimí la foto antes de subirla.');
+
+                // Clear the file input
+                input.value = '';
+                document.getElementById(spanId).textContent = 'Hacé clic para subir tu comprobante...';
+
+                // Highlight the label with red border
+                const label = document.querySelector(`label[for="${input.id}"]`);
+                if (label) {
+                    label.style.borderColor = '#ef4444';
+                    label.style.backgroundColor = '#fee2e2';
+                    label.style.animation = 'shake 0.5s';
+
+                    // Remove highlight after 3 seconds
+                    setTimeout(() => {
+                        label.style.borderColor = '';
+                        label.style.backgroundColor = '';
+                        label.style.animation = '';
+                    }, 3000);
+                }
+
+                return;
+            }
+
+            // File is valid, show the name
+            document.getElementById(spanId).textContent = file.name;
         }
 
         // Format CUIT del Local automatically
@@ -1067,6 +1102,28 @@
 
                     return;
                 }
+
+                // Validate file size (8MB max)
+                const maxSize = 8 * 1024 * 1024; // 8MB in bytes
+                if (ticketAgencia.size > maxSize) {
+                    alert('⚠️ ARCHIVO MUY GRANDE\n\nLa imagen del ticket supera el tamaño máximo permitido.\n\nTamaño del archivo: ' + (ticketAgencia.size / 1024 / 1024).toFixed(2) + ' MB\nTamaño máximo: 8 MB\n\nPor favor, seleccioná una imagen más pequeña o comprimí la foto antes de subirla.');
+
+                    // Scroll to the file input and highlight it
+                    const fileLabel = document.querySelector('label[for="ticketAgencia"]');
+                    fileLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    fileLabel.style.borderColor = '#ef4444';
+                    fileLabel.style.backgroundColor = '#fee2e2';
+                    fileLabel.style.animation = 'shake 0.5s';
+
+                    // Remove highlight after 3 seconds
+                    setTimeout(() => {
+                        fileLabel.style.borderColor = '';
+                        fileLabel.style.backgroundColor = '';
+                        fileLabel.style.animation = '';
+                    }, 3000);
+
+                    return;
+                }
             } else {
                 // Validate comercio section
                 // Validate CUIT
@@ -1094,6 +1151,28 @@
                 const ticketComercio = document.getElementById('ticketComercio').files[0];
                 if (!ticketComercio) {
                     alert('⚠️ FOTO REQUERIDA\n\nPor favor, subí la foto del ticket o factura para poder participar del sorteo.\n\nRecordá que es obligatorio adjuntar una imagen clara del comprobante de compra.');
+
+                    // Scroll to the file input and highlight it
+                    const fileLabel = document.querySelector('label[for="ticketComercio"]');
+                    fileLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    fileLabel.style.borderColor = '#ef4444';
+                    fileLabel.style.backgroundColor = '#fee2e2';
+                    fileLabel.style.animation = 'shake 0.5s';
+
+                    // Remove highlight after 3 seconds
+                    setTimeout(() => {
+                        fileLabel.style.borderColor = '';
+                        fileLabel.style.backgroundColor = '';
+                        fileLabel.style.animation = '';
+                    }, 3000);
+
+                    return;
+                }
+
+                // Validate file size (8MB max)
+                const maxSize = 8 * 1024 * 1024; // 8MB in bytes
+                if (ticketComercio.size > maxSize) {
+                    alert('⚠️ ARCHIVO MUY GRANDE\n\nLa imagen del ticket/factura supera el tamaño máximo permitido.\n\nTamaño del archivo: ' + (ticketComercio.size / 1024 / 1024).toFixed(2) + ' MB\nTamaño máximo: 8 MB\n\nPor favor, seleccioná una imagen más pequeña o comprimí la foto antes de subirla.');
 
                     // Scroll to the file input and highlight it
                     const fileLabel = document.querySelector('label[for="ticketComercio"]');
