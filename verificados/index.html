@@ -245,6 +245,7 @@
         // API URLs
         const API_URL_COMERCIO = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f41ef9a7ac214c0a9d6da26a1d087ba0/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CLCm0Hot5ySPWwKLIvgEGDtvz2Jp_YqnYn40K6OJitE";
         const API_URL_AGENCIA = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9c3f60f9dd2241139c8c8419790c5648/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zU1en4X8GegkCoEKGAjXqdbEdDo-xHnVK2p8OUyUul0";
+        const API_URL_IMAGEN_AGENCIA = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/034ffb47f29c43f2918f361d36bd661e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=rmLYrkoZFc95ZUDblAMVwzf2RKlXW61wq7JfvLciuE0";
 
         // State
         let currentMode = 'agencia'; // 'agencia' or 'comercio'
@@ -514,15 +515,65 @@
             document.body.style.overflow = 'hidden';
         }
 
-        async function fetchImage(id) {
-            const noImageElement = document.getElementById('noImage');
-            // Mock placeholder since no endpoint was provided for images yet.
-            // If real endpoint available:
-            // loadingElement.classList.remove('hidden');
-            // ... fetch ...
 
-            // Just showing no image for now
-            noImageElement.classList.remove('hidden');
+
+        async function fetchImage(id) {
+            const imgElement = document.getElementById('modalImage');
+            const loadingElement = document.getElementById('imageLoading');
+            const noImageElement = document.getElementById('noImage');
+
+            // Reset UI
+            imgElement.classList.add('hidden');
+            imgElement.src = '';
+            loadingElement.classList.remove('hidden');
+            noImageElement.classList.add('hidden');
+
+            try {
+                let url = null;
+                if (currentMode === 'agencia') {
+                    url = `${API_URL_IMAGEN_AGENCIA}&id_agencia=${id}`;
+                } else {
+                    // Placeholder logic for Commerce until endpoint provided
+                    // Simulate delay and no image
+                    await new Promise(r => setTimeout(r, 1000));
+                    throw new Error("No endpoint for commerce images yet");
+                }
+
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                const data = await response.json();
+
+                // Heuristic to find base64 string in response
+                // It might be data.imagen, data.base64, or just data if it is the string
+                // Also could be in an array data[0].imagen
+                let base64String = null;
+
+                if (Array.isArray(data) && data.length > 0) {
+                    base64String = data[0].imagen || data[0].documento || data[0].base64;
+                } else if (typeof data === 'object') {
+                    base64String = data.imagen || data.documento || data.base64;
+                }
+
+                if (base64String) {
+                    // Add header if missing
+                    if (!base64String.startsWith('data:image')) {
+                        // Assume JPEG or PNG. Browser usually figures it out or we default to jpeg
+                        base64String = `data:image/jpeg;base64,${base64String}`;
+                    }
+                    imgElement.src = base64String;
+                    imgElement.classList.remove('hidden');
+                } else {
+                    console.warn("No image data found in response", data);
+                    noImageElement.classList.remove('hidden');
+                }
+
+            } catch (error) {
+                console.error("Error fetching image:", error);
+                noImageElement.classList.remove('hidden');
+            } finally {
+                loadingElement.classList.add('hidden');
+            }
         }
 
         function validateRecord() {
