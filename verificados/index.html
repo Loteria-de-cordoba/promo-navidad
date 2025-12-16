@@ -18,15 +18,6 @@
             box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
         }
 
-        .toggle-checkbox:checked {
-            right: 0;
-            border-color: #10b981;
-        }
-
-        .toggle-checkbox:checked+.toggle-label {
-            background-color: #10b981;
-        }
-
         .fade-in {
             animation: fadeIn 0.3s ease-in-out;
         }
@@ -43,7 +34,6 @@
             }
         }
 
-        /* Modal Styles */
         .modal-overlay {
             background-color: rgba(0, 0, 0, 0.5);
             backdrop-filter: blur(4px);
@@ -147,7 +137,9 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <!-- Info Section -->
                     <div class="space-y-4">
-                        <div class="bg-gray-50 p-4 rounded-xl space-y-3">
+
+                        <!-- Comercio Fields -->
+                        <div id="comercioFields" class="bg-gray-50 p-4 rounded-xl space-y-3 hidden">
                             <h4 class="font-semibold text-gray-700 border-b border-gray-200 pb-2 mb-2">Información del
                                 Comercio</h4>
                             <div>
@@ -160,10 +152,31 @@
                             </div>
                         </div>
 
+                        <!-- Agencia Fields -->
+                        <div id="agenciaFields" class="bg-purple-50 p-4 rounded-xl space-y-3 hidden">
+                            <h4 class="font-semibold text-purple-800 border-b border-purple-200 pb-2 mb-2">Información
+                                de Agencia</h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <span class="text-xs font-bold text-purple-600 uppercase">Nro. Agencia</span>
+                                    <p id="modalNroAgencia" class="text-lg font-medium text-gray-900 font-mono">-</p>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-purple-600 uppercase">Sucursal</span>
+                                    <p id="modalSucursal" class="text-lg font-medium text-gray-900 font-mono">-</p>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold text-purple-600 uppercase">OCR</span>
+                                <p id="modalOCR" class="text-base text-gray-700 font-mono break-all">-</p>
+                            </div>
+                        </div>
+
                         <div class="bg-blue-50 p-4 rounded-xl space-y-3">
                             <h4 class="font-semibold text-blue-800 border-b border-blue-200 pb-2 mb-2">Detalles de la
-                                Compra</h4>
-                            <div>
+                                Transacción</h4>
+                            <!-- Common Fields -->
+                            <div id="fieldTicket" class="hidden">
                                 <span class="text-xs font-bold text-blue-600 uppercase">Nro. Comprobante</span>
                                 <p id="modalTicket" class="text-base text-gray-900 font-mono">-</p>
                             </div>
@@ -177,7 +190,7 @@
                                     <p id="modalMonto" class="text-xl font-bold text-green-600">-</p>
                                 </div>
                             </div>
-                            <div>
+                            <div id="fieldPago" class="hidden">
                                 <span class="text-xs font-bold text-blue-600 uppercase">Medio de Pago</span>
                                 <p id="modalPago" class="text-base text-gray-900">-</p>
                             </div>
@@ -209,7 +222,17 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-end gap-3">
+            <div class="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-between items-center gap-3">
+                <div class="flex gap-3">
+                    <button onclick="anularRecord()"
+                        class="px-5 py-2.5 bg-red-50 text-red-600 border border-red-200 font-semibold rounded-lg hover:bg-red-100 transition-colors">
+                        🚫 Anular
+                    </button>
+                    <button onclick="validateRecord()"
+                        class="px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-sm">
+                        ✅ Validar
+                    </button>
+                </div>
                 <button onclick="closeModal()"
                     class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
                     Cerrar
@@ -219,87 +242,55 @@
     </div>
 
     <script>
-        // Mock Data for Agencies
-        const agenciasData = [
-            {
-                "id_apuesta": "550e8400-e29b-41d4-a716-446655440000",
-                "id_persona": "d497461c-67f0-44e5-80b1-02d30ba45735",
-                "nro_agencia": "1234",
-                "nro_sucursal": "01",
-                "ocr": "1234567890123456",
-                "monto_apuesta": 5000.0,
-                "fecha_creacion": "2025-12-16T12:00:00.000000Z",
-                "validado": "S",
-                "verificado": "N"
-            },
-            {
-                "id_apuesta": "770e8400-e29b-41d4-a716-996655441122",
-                "id_persona": "a1b2c3d4-67f0-44e5-80b1-998877665544",
-                "nro_agencia": "5678",
-                "nro_sucursal": "02",
-                "ocr": "9876543210987654",
-                "monto_apuesta": 12500.0,
-                "fecha_creacion": "2025-12-16T15:45:00.000000Z",
-                "validado": "N",
-                "verificado": "N"
-            }
-        ];
+        // API URLs
+        const API_URL_COMERCIO = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f41ef9a7ac214c0a9d6da26a1d087ba0/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CLCm0Hot5ySPWwKLIvgEGDtvz2Jp_YqnYn40K6OJitE";
+        const API_URL_AGENCIA = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9c3f60f9dd2241139c8c8419790c5648/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zU1en4X8GegkCoEKGAjXqdbEdDo-xHnVK2p8OUyUul0";
 
-        let comerciosData = [];
+        // State
+        let currentMode = 'agencia'; // 'agencia' or 'comercio'
         let currentPage = 1;
+        let recordsData = [];
         let isLoading = false;
-        let currentMode = 'agencia';
-
-        // Main Data API
-        const API_URL = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f41ef9a7ac214c0a9d6da26a1d087ba0/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CLCm0Hot5ySPWwKLIvgEGDtvz2Jp_YqnYn40K6OJitE";
-
-        // Image API Placeholder (To be replaced with real endpoint)
-        const IMAGE_API_URL = "https://placeholder-api-url.com/get-image";
+        let currentRecordId = null;
 
         async function setMode(mode) {
             currentMode = mode;
+            currentPage = 1;
+            recordsData = [];
 
-            // Update Buttons
+            // Update Buttons UI
             const btnAgencia = document.getElementById('btnAgencia');
             const btnComercio = document.getElementById('btnComercio');
-            const paginationControls = document.getElementById('paginationControls');
 
             if (mode === 'agencia') {
                 btnAgencia.className = "px-6 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm bg-white text-green-700";
                 btnComercio.className = "px-6 py-2 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all";
-                paginationControls.classList.add('hidden');
-
-                // Ensure UI is cleanly reset
-                renderTable();
             } else {
                 btnComercio.className = "px-6 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm bg-white text-blue-700";
                 btnAgencia.className = "px-6 py-2 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all";
-                paginationControls.classList.remove('hidden');
-
-                // If we don't have data for this page yet, load it. 
-                if (comerciosData.length === 0) {
-                    await loadComercios(currentPage);
-                } else {
-                    renderTable();
-                }
             }
+
+            // Load Data
+            await loadData();
         }
 
-        async function loadComercios(page) {
+        async function loadData() {
             isLoading = true;
             updateUIState();
 
+            const apiUrl = currentMode === 'agencia' ? API_URL_AGENCIA : API_URL_COMERCIO;
+
             try {
-                const response = await fetch(`${API_URL}&page=${page}`);
+                const response = await fetch(`${apiUrl}&page=${currentPage}`);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                 const data = await response.json();
-                comerciosData = Array.isArray(data) ? data : (data.value || []);
+                recordsData = Array.isArray(data) ? data : (data.value || []);
 
             } catch (error) {
                 console.error("Error loading data:", error);
-                comerciosData = [];
-                alert("Hubo un error al cargar los datos de comercio.");
+                recordsData = [];
+                // alert("Hubo un error al cargar los datos."); 
             } finally {
                 isLoading = false;
                 updateUIState();
@@ -312,7 +303,7 @@
             if (newPage < 1) return;
 
             currentPage = newPage;
-            loadComercios(currentPage);
+            loadData();
         }
 
         function updateUIState() {
@@ -322,11 +313,16 @@
             const btnPrev = document.getElementById('btnPrev');
             const pageIndicator = document.getElementById('pageIndicator');
             const btnNext = document.getElementById('btnNext');
+            const paginationControls = document.getElementById('paginationControls');
+
+            // Show/Hide Pagination
+            paginationControls.classList.remove('hidden');
 
             pageIndicator.innerText = `Página ${currentPage}`;
             btnPrev.disabled = currentPage <= 1 || isLoading;
 
-            const hasMore = comerciosData.length === 10;
+            // Assuming 10 items per page
+            const hasMore = recordsData.length === 10;
             btnNext.disabled = isLoading || !hasMore;
 
             if (isLoading) {
@@ -346,13 +342,11 @@
             const theadRow = document.querySelector('thead tr');
             const emptyState = document.getElementById('emptyState');
 
-            // Clear current content
+            // Clear content
             tbody.innerHTML = '';
             theadRow.innerHTML = '';
 
-            const data = currentMode === 'agencia' ? agenciasData : comerciosData;
-
-            if (!data || data.length === 0) {
+            if (!recordsData || recordsData.length === 0) {
                 container.classList.add('hidden');
                 emptyState.classList.remove('hidden');
                 return;
@@ -368,10 +362,12 @@
                 columns = [
                     { key: 'fecha_creacion', label: 'Fecha', format: val => formatDate(val) },
                     { key: 'nro_agencia', label: 'Agencia' },
+                    { key: 'nro_sucursal', label: 'Sucursal' },
                     { key: 'ocr', label: 'OCR' },
                     { key: 'monto_apuesta', label: 'Monto', format: val => `$${val?.toLocaleString('es-AR')}` },
                     { key: 'validado', label: 'Validado', format: renderStatusBadge },
-                    { key: 'verificado', label: 'Verificado', format: renderStatusBadge }
+                    // { key: 'verificado', label: 'Verificado', format: renderStatusBadge },
+                    { key: 'actions', label: 'Acciones', format: (val, item) => renderActions(item) }
                 ];
             } else {
                 columns = [
@@ -380,7 +376,6 @@
                     { key: 'cuit_comercio', label: 'CUIT' },
                     { key: 'numero_ticket_factura', label: 'Comprobante' },
                     { key: 'monto_total_compra', label: 'Monto', format: val => `$${val?.toLocaleString('es-AR')}` },
-                    //{ key: 'medio_pago', label: 'Pago', format: val => val === 'bancor' ? '💳 Bancor' : '💰 Otros' },
                     { key: 'validado', label: 'Validado', format: renderStatusBadge },
                     // { key: 'verificado', label: 'Verificado', format: renderStatusBadge },
                     { key: 'actions', label: 'Acciones', format: (val, item) => renderActions(item) }
@@ -396,7 +391,10 @@
             });
 
             // Render Rows
-            data.forEach(item => {
+            recordsData.forEach(item => {
+                // Determine ID (either id_compra or id_agencia)
+                const id = currentMode === 'agencia' ? item.id_agencia : item.id_compra;
+
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-gray-50 hover:bg-white transition-colors bg-white/50";
 
@@ -419,10 +417,7 @@
         }
 
         function renderActions(item) {
-            // Store the item data in a data attribute (serialized) or just use the button with an onclick passing the ID
-            // Since passing the whole object in HTML string is messy, we'll store it in a global array or search by ID.
-            // Here we'll just pass the ID to openModal and find it.
-            const id = item.id_compra; // Assuming id_compra is unique for comercio
+            const id = currentMode === 'agencia' ? item.id_agencia : item.id_compra;
             return `
                 <button onclick="openModal('${id}')" class="group flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all text-xs font-semibold border border-blue-200 hover:border-blue-600">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -455,24 +450,56 @@
         // --- Modal Logic ---
 
         function openModal(id) {
-            const item = comerciosData.find(d => d.id_compra === id);
+            currentRecordId = id;
+
+            // Find item based on mode
+            const idKey = currentMode === 'agencia' ? 'id_agencia' : 'id_compra';
+            const item = recordsData.find(d => d[idKey] === id);
+
             if (!item) return;
 
-            // Populate Text Fields
-            document.getElementById('modalEmpresa').textContent = item.descripcion_empresa || '-';
-            document.getElementById('modalCuit').textContent = item.cuit_comercio || '-';
-            document.getElementById('modalTicket').textContent = item.numero_ticket_factura || '-';
-            document.getElementById('modalFecha').textContent = formatDate(item.fecha_creacion);
-            document.getElementById('modalMonto').textContent = item.monto_total_compra ? `$${item.monto_total_compra.toLocaleString('es-AR')}` : '-';
-            const pagoText = item.medio_pago === 'bancor' ? '💳 Bancor' : (item.medio_pago === 'otros' ? '💰 Otros' : item.medio_pago || '-');
-            document.getElementById('modalPago').textContent = pagoText;
+            const comercioFields = document.getElementById('comercioFields');
+            const agenciaFields = document.getElementById('agenciaFields');
+            const fieldTicket = document.getElementById('fieldTicket');
+            const fieldPago = document.getElementById('fieldPago');
 
-            // Image Handling
+            if (currentMode === 'agencia') {
+                // Show Agency Fields
+                comercioFields.classList.add('hidden');
+                agenciaFields.classList.remove('hidden');
+                fieldTicket.classList.add('hidden'); // No ticket number field in mock for agency, uses OCR
+                fieldPago.classList.add('hidden');
+
+                // Populate Agency
+                document.getElementById('modalNroAgencia').textContent = item.nro_agencia || '-';
+                document.getElementById('modalSucursal').textContent = item.nro_sucursal || '-';
+                document.getElementById('modalOCR').textContent = item.ocr || '-';
+                document.getElementById('modalMonto').textContent = item.monto_apuesta ? `$${item.monto_apuesta.toLocaleString('es-AR')}` : '-';
+                document.getElementById('modalFecha').textContent = formatDate(item.fecha_creacion);
+
+            } else {
+                // Show Commerce Fields
+                comercioFields.classList.remove('hidden');
+                agenciaFields.classList.add('hidden');
+                fieldTicket.classList.remove('hidden');
+                fieldPago.classList.remove('hidden');
+
+                // Populate Commerce
+                document.getElementById('modalEmpresa').textContent = item.descripcion_empresa || '-';
+                document.getElementById('modalCuit').textContent = item.cuit_comercio || '-';
+                document.getElementById('modalTicket').textContent = item.numero_ticket_factura || '-';
+                document.getElementById('modalMonto').textContent = item.monto_total_compra ? `$${item.monto_total_compra.toLocaleString('es-AR')}` : '-';
+                document.getElementById('modalFecha').textContent = formatDate(item.fecha_creacion);
+
+                const pagoText = item.medio_pago === 'bancor' ? '💳 Bancor' : (item.medio_pago === 'otros' ? '💰 Otros' : item.medio_pago || '-');
+                document.getElementById('modalPago').textContent = pagoText;
+            }
+
+            // Image Handling (Reset)
             const imgElement = document.getElementById('modalImage');
             const loadingElement = document.getElementById('imageLoading');
             const noImageElement = document.getElementById('noImage');
 
-            // Reset State
             imgElement.classList.add('hidden');
             imgElement.src = '';
             loadingElement.classList.add('hidden');
@@ -484,58 +511,47 @@
             // Show Modal
             const modal = document.getElementById('detailsModal');
             modal.classList.remove('hidden');
-            document.body.style.overflow = 'hidden'; // Prevent scrolling
+            document.body.style.overflow = 'hidden';
         }
 
         async function fetchImage(id) {
-            const imgElement = document.getElementById('modalImage');
-            const loadingElement = document.getElementById('imageLoading');
             const noImageElement = document.getElementById('noImage');
+            // Mock placeholder since no endpoint was provided for images yet.
+            // If real endpoint available:
+            // loadingElement.classList.remove('hidden');
+            // ... fetch ...
 
-            loadingElement.classList.remove('hidden');
+            // Just showing no image for now
+            noImageElement.classList.remove('hidden');
+        }
 
-            try {
-                // TODO: Replace with real endpoint call.
-                // Assuming POST or GET to get base64
-                // const response = await fetch(`${IMAGE_API_URL}?id=${id}`);
-                // const data = await response.json();
+        function validateRecord() {
+            if (!currentRecordId) return;
+            if (confirm('¿Estás seguro que deseas VALIDAR este comprobante?')) {
+                console.log('Validating:', currentRecordId, 'Mode:', currentMode);
+                alert('Registro validado (Simulacion)');
+                closeModal();
+            }
+        }
 
-                // For demonstration, simulating network request and mock response if no real URL provided
-                await new Promise(r => setTimeout(r, 1000));
-
-                // Mock logic: randomly succeed or fail for demo
-                // In real implementation: if (data.base64) ...
-
-                const hasImage = false; // Set to true when real endpoint available or for demo
-
-                if (hasImage) {
-                    // imgElement.src = `data:image/jpeg;base64,${data.base64Content}`;
-                    // imgElement.classList.remove('hidden');
-                } else {
-                    // For now showing "No Image" since we don't have the real endpoint yet
-                    noImageElement.classList.remove('hidden');
-                    console.log("Fetching image for ID:", id, "- Placeholder logic: No endpoint connected.");
-                }
-
-            } catch (error) {
-                console.error("Error fetching image:", error);
-                noImageElement.classList.remove('hidden');
-            } finally {
-                loadingElement.classList.add('hidden');
+        function anularRecord() {
+            if (!currentRecordId) return;
+            if (confirm('¿Estás seguro que deseas ANULAR este comprobante?')) {
+                console.log('Anulando:', currentRecordId, 'Mode:', currentMode);
+                alert('Registro anulado (Simulacion)');
+                closeModal();
             }
         }
 
         function closeModal() {
             const modal = document.getElementById('detailsModal');
             modal.classList.add('hidden');
-            document.body.style.overflow = ''; // Restore scrolling
+            document.body.style.overflow = '';
         }
 
-        // Close on clicking overlay
+        // Close on overlay click
         document.getElementById('detailsModal').addEventListener('click', function (e) {
-            if (e.target === this) {
-                closeModal();
-            }
+            if (e.target === this) closeModal();
         });
 
         // Initialize
