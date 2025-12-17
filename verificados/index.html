@@ -222,21 +222,35 @@
             </div>
 
             <!-- Modal Footer -->
-            <div class="p-6 border-t border-gray-100 bg-gray-50 rounded-b-2xl flex justify-between items-center gap-3">
-                <div class="flex gap-3">
-                    <button onclick="anularRecord()"
-                        class="px-5 py-2.5 bg-red-50 text-red-600 border border-red-200 font-semibold rounded-lg hover:bg-red-100 transition-colors">
-                        🚫 Anular
-                    </button>
-                    <button onclick="validateRecord()"
-                        class="px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-sm">
-                        ✅ Validar
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-2xl">
+                <!-- Observation Field -->
+                <div class="mb-4">
+                    <label for="modalObservacion" class="block text-sm font-semibold text-gray-700 mb-1">Observación
+                        (Opcional)</label>
+                    <textarea id="modalObservacion" maxlength="100"
+                        placeholder="Ingrese una observación (máx. 100 caracteres)"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none h-20 transition-all"></textarea>
+                    <div class="text-right text-xs text-gray-400 mt-1">
+                        <span id="charCount">0</span>/100
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center gap-3">
+                    <div class="flex gap-3">
+                        <button onclick="anularRecord()"
+                            class="px-5 py-2.5 bg-red-50 text-red-600 border border-red-200 font-semibold rounded-lg hover:bg-red-100 transition-colors flex items-center gap-2">
+                            <span>🚫</span> Anular
+                        </button>
+                        <button onclick="validateRecord()"
+                            class="px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-sm flex items-center gap-2">
+                            <span>✅</span> Validar
+                        </button>
+                    </div>
+                    <button onclick="closeModal()"
+                        class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                        Cerrar
                     </button>
                 </div>
-                <button onclick="closeModal()"
-                    class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
-                    Cerrar
-                </button>
             </div>
         </div>
     </div>
@@ -246,6 +260,9 @@
         const API_URL_COMERCIO = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f41ef9a7ac214c0a9d6da26a1d087ba0/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CLCm0Hot5ySPWwKLIvgEGDtvz2Jp_YqnYn40K6OJitE";
         const API_URL_AGENCIA = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9c3f60f9dd2241139c8c8419790c5648/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zU1en4X8GegkCoEKGAjXqdbEdDo-xHnVK2p8OUyUul0";
         const API_URL_IMAGEN_AGENCIA = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/034ffb47f29c43f2918f361d36bd661e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=rmLYrkoZFc95ZUDblAMVwzf2RKlXW61wq7JfvLciuE0";
+        const API_URL_IMAGEN_COMERCIO = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cd7cd2bf21ad451cb79f654c7deeb7c6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=XE8YRfIjbv-y2gp8eIioGP3x20ask7ySwek-_7MGl0I";
+        const API_URL_VERIFICACION_COMERCIO = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d3a478d5243d4bd79c12b0fceb30f035/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=5ZBw3Y-X-GwxkZHzndzwNAoi1_jobLznZfJivxWrnHA";
+        const API_URL_VERIFICACION_AGENCIA = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/12be5d47fadf4d71a84824121b114dc1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zFY_gjq3ZVF1gOO1JAtzN-w-2yg1pxnqjI0g9d4NQA4";
 
         // State
         let currentMode = 'agencia'; // 'agencia' or 'comercio'
@@ -501,6 +518,10 @@
             const loadingElement = document.getElementById('imageLoading');
             const noImageElement = document.getElementById('noImage');
 
+            // Observation Reset
+            document.getElementById('modalObservacion').value = '';
+            document.getElementById('charCount').textContent = '0';
+
             imgElement.classList.add('hidden');
             imgElement.src = '';
             loadingElement.classList.add('hidden');
@@ -533,64 +554,149 @@
                 if (currentMode === 'agencia') {
                     url = `${API_URL_IMAGEN_AGENCIA}&id_agencia=${id}`;
                 } else {
-                    // Placeholder logic for Commerce until endpoint provided
-                    // Simulate delay and no image
-                    await new Promise(r => setTimeout(r, 1000));
-                    throw new Error("No endpoint for commerce images yet");
+                    url = `${API_URL_IMAGEN_COMERCIO}&id_compra=${id}`;
                 }
 
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
-                const data = await response.json();
+                // Handle as Blob (Binary)
+                const blob = await response.blob();
 
-                // Heuristic to find base64 string in response
-                // It might be data.imagen, data.base64, or just data if it is the string
-                // Also could be in an array data[0].imagen
-                let base64String = null;
+                if (blob.size > 0) {
+                    const objectUrl = URL.createObjectURL(blob);
 
-                if (Array.isArray(data) && data.length > 0) {
-                    base64String = data[0].imagen || data[0].documento || data[0].base64;
-                } else if (typeof data === 'object') {
-                    base64String = data.imagen || data.documento || data.base64;
-                }
+                    // Revoke previous URL if needed (ideally we track this to clean up)
+                    imgElement.onload = () => {
+                        // URL.revokeObjectURL(objectUrl); // Optional: revoke after load if we don't need it later
+                    };
 
-                if (base64String) {
-                    // Add header if missing
-                    if (!base64String.startsWith('data:image')) {
-                        // Assume JPEG or PNG. Browser usually figures it out or we default to jpeg
-                        base64String = `data:image/jpeg;base64,${base64String}`;
-                    }
-                    imgElement.src = base64String;
+                    imgElement.src = objectUrl;
                     imgElement.classList.remove('hidden');
                 } else {
-                    console.warn("No image data found in response", data);
+                    console.warn("Empty blob received");
                     noImageElement.classList.remove('hidden');
                 }
 
             } catch (error) {
                 console.error("Error fetching image:", error);
                 noImageElement.classList.remove('hidden');
-            } finally {
                 loadingElement.classList.add('hidden');
             }
         }
 
-        function validateRecord() {
+        async function validateRecord() {
             if (!currentRecordId) return;
+
             if (confirm('¿Estás seguro que deseas VALIDAR este comprobante?')) {
-                console.log('Validating:', currentRecordId, 'Mode:', currentMode);
-                alert('Registro validado (Simulacion)');
-                closeModal();
+                const obs = document.getElementById('modalObservacion').value;
+
+                if (currentMode === 'comercio') {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_COMERCIO, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                id_compra: currentRecordId,
+                                verificado: 'S',
+                                observacion: obs
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API');
+
+                        alert('Registro validado correctamente.');
+                        closeModal();
+                        // Refresh data
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al validar el registro.');
+                    }
+                } else {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_AGENCIA, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                id_agencia: currentRecordId,
+                                verificado: 'S',
+                                observacion: obs
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API Agencia');
+                        alert('Registro de agencia validado correctamente.');
+                        closeModal();
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al validar agencia.');
+                    }
+                }
             }
         }
 
-        function anularRecord() {
+        async function anularRecord() {
             if (!currentRecordId) return;
+
             if (confirm('¿Estás seguro que deseas ANULAR este comprobante?')) {
-                console.log('Anulando:', currentRecordId, 'Mode:', currentMode);
-                alert('Registro anulado (Simulacion)');
-                closeModal();
+                const obs = document.getElementById('modalObservacion').value;
+
+                if (currentMode === 'comercio') {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_COMERCIO, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                id_compra: currentRecordId,
+                                verificado: 'X',
+                                observacion: obs
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API');
+
+                        alert('Registro anulado correctamente.');
+                        closeModal();
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al anular el registro.');
+                    }
+                } else {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_AGENCIA, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                id_agencia: currentRecordId,
+                                verificado: 'X',
+                                observacion: obs
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API Agencia');
+                        alert('Registro de agencia anulado correctamente.');
+                        closeModal();
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al anular agencia.');
+                    }
+                }
             }
         }
 
@@ -608,6 +714,15 @@
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             setMode('agencia');
+
+            // Character Count Logic
+            const textarea = document.getElementById('modalObservacion');
+            const countDisplay = document.getElementById('charCount');
+
+            textarea.addEventListener('input', function () {
+                const currentLength = this.value.length;
+                countDisplay.textContent = currentLength;
+            });
         });
 
     </script>
