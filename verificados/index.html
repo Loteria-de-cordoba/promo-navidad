@@ -56,16 +56,34 @@
                 </div>
             </div>
 
-            <!-- Toggle Switch -->
-            <div class="flex items-center bg-gray-100 p-1.5 rounded-xl">
-                <button id="btnAgencia" onclick="setMode('agencia')"
-                    class="px-6 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm bg-white text-green-700">
-                    🏪 Agencias
-                </button>
-                <button id="btnComercio" onclick="setMode('comercio')"
-                    class="px-6 py-2 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all">
-                    🛒 Comercios
-                </button>
+            <div class="flex items-center gap-4">
+                <!-- Status Filters (Visible in both modes now) -->
+                <div id="statusFilters" class="flex bg-gray-50 p-1 rounded-lg border border-gray-100">
+                    <button onclick="setStatus('N')" id="btnStatusN"
+                        class="px-3 py-1.5 text-xs font-semibold rounded-md transition-colors bg-white shadow text-gray-800">
+                        ⏳ Pendientes
+                    </button>
+                    <button onclick="setStatus('S')" id="btnStatusS"
+                        class="px-3 py-1.5 text-xs font-semibold rounded-md text-gray-500 hover:text-gray-800 transition-colors">
+                        ✅ Verificados
+                    </button>
+                    <button onclick="setStatus('X')" id="btnStatusX"
+                        class="px-3 py-1.5 text-xs font-semibold rounded-md text-gray-500 hover:text-gray-800 transition-colors">
+                        🚫 Anulados
+                    </button>
+                </div>
+
+                <!-- Toggle Switch -->
+                <div class="flex items-center bg-gray-100 p-1.5 rounded-xl">
+                    <button id="btnAgencia" onclick="setMode('agencia')"
+                        class="px-6 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm bg-white text-green-700">
+                        🏪 Agencias
+                    </button>
+                    <button id="btnComercio" onclick="setMode('comercio')"
+                        class="px-6 py-2 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all">
+                        🛒 Comercios
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -140,7 +158,9 @@
 
                         <!-- Comercio Fields -->
                         <div id="comercioFields" class="bg-gray-50 p-4 rounded-xl space-y-3 hidden">
-                            <h4 class="font-semibold text-gray-700 border-b border-gray-200 pb-2 mb-2">Información del
+                            <h4 class="font-semibold text-gray-700 border-b border-gray-200 pb-2 mb-2">
+                                Información
+                                del
                                 Comercio</h4>
                             <div>
                                 <span class="text-xs font-bold text-gray-500 uppercase">Empresa/Comercio</span>
@@ -154,16 +174,21 @@
 
                         <!-- Agencia Fields -->
                         <div id="agenciaFields" class="bg-purple-50 p-4 rounded-xl space-y-3 hidden">
-                            <h4 class="font-semibold text-purple-800 border-b border-purple-200 pb-2 mb-2">Información
+                            <h4 class="font-semibold text-purple-800 border-b border-purple-200 pb-2 mb-2">
+                                Información
                                 de Agencia</h4>
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
-                                    <span class="text-xs font-bold text-purple-600 uppercase">Nro. Agencia</span>
-                                    <p id="modalNroAgencia" class="text-lg font-medium text-gray-900 font-mono">-</p>
+                                    <span class="text-xs font-bold text-purple-600 uppercase">Nro.
+                                        Agencia</span>
+                                    <p id="modalNroAgencia" class="text-lg font-medium text-gray-900 font-mono">
+                                        -
+                                    </p>
                                 </div>
                                 <div>
                                     <span class="text-xs font-bold text-purple-600 uppercase">Sucursal</span>
-                                    <p id="modalSucursal" class="text-lg font-medium text-gray-900 font-mono">-</p>
+                                    <p id="modalSucursal" class="text-lg font-medium text-gray-900 font-mono">-
+                                    </p>
                                 </div>
                             </div>
                             <div>
@@ -173,7 +198,9 @@
                         </div>
 
                         <div class="bg-blue-50 p-4 rounded-xl space-y-3">
-                            <h4 class="font-semibold text-blue-800 border-b border-blue-200 pb-2 mb-2">Detalles de la
+                            <h4 class="font-semibold text-blue-800 border-b border-blue-200 pb-2 mb-2">Detalles
+                                de
+                                la
                                 Transacción</h4>
                             <!-- Common Fields -->
                             <div id="fieldTicket" class="hidden">
@@ -207,7 +234,8 @@
 
                             <!-- Loading Spinner for Image -->
                             <div id="imageLoading" class="hidden flex flex-col items-center">
-                                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-2"></div>
+                                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-2">
+                                </div>
                                 <span class="text-sm text-gray-500">Cargando imagen...</span>
                             </div>
 
@@ -266,40 +294,71 @@
 
         // State
         let currentMode = 'agencia'; // 'agencia' or 'comercio'
+        let currentStatus = 'N'; // 'N' (Pending), 'S' (Verified), 'X' (Annulled)
         let currentPage = 1;
         let recordsData = [];
-        let isLoading = false;
         let currentRecordId = null;
 
         async function setMode(mode) {
             currentMode = mode;
             currentPage = 1;
+            currentStatus = 'N'; // Reset status when switching modes
             recordsData = [];
 
             // Update Buttons UI
             const btnAgencia = document.getElementById('btnAgencia');
             const btnComercio = document.getElementById('btnComercio');
+            const statusFilters = document.getElementById('statusFilters');
 
             if (mode === 'agencia') {
                 btnAgencia.className = "px-6 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm bg-white text-green-700";
                 btnComercio.className = "px-6 py-2 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all";
+                // statusFilters.classList.remove('hidden'); // Always visible now
+                updateStatusUI();
             } else {
                 btnComercio.className = "px-6 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm bg-white text-blue-700";
                 btnAgencia.className = "px-6 py-2 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all";
+                // statusFilters.classList.add('hidden'); // Always visible now
+                updateStatusUI();
             }
 
             // Load Data
             await loadData();
         }
 
+        function setStatus(status) {
+            currentStatus = status;
+            currentPage = 1;
+            updateStatusUI();
+            loadData();
+        }
+
+        function updateStatusUI() {
+            const btns = ['N', 'S', 'X'];
+            btns.forEach(s => {
+                const btn = document.getElementById(`btnStatus${s}`);
+                if (s === currentStatus) {
+                    btn.className = "px-3 py-1.5 text-xs font-semibold rounded-md transition-colors bg-white shadow text-gray-800 border-gray-200 border";
+                } else {
+                    btn.className = "px-3 py-1.5 text-xs font-semibold rounded-md text-gray-500 hover:text-gray-800 transition-colors";
+                }
+            });
+        }
+
         async function loadData() {
             isLoading = true;
             updateUIState();
 
-            const apiUrl = currentMode === 'agencia' ? API_URL_AGENCIA : API_URL_COMERCIO;
-
             try {
-                const response = await fetch(`${apiUrl}&page=${currentPage}`);
+                const baseUrl = currentMode === 'agencia' ? API_URL_AGENCIA : API_URL_COMERCIO;
+                let url = `${baseUrl}&page=${currentPage}`;
+
+                // Append verification status for both
+                url += `&verificado=${currentStatus}`;
+
+                console.log("Fetching URL:", url); // Debugging
+
+                const response = await fetch(url);
                 if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
 
                 const data = await response.json();
@@ -373,40 +432,24 @@
                 emptyState.classList.add('hidden');
             }
 
-            // Define columns
-            let columns = [];
-
-            if (currentMode === 'agencia') {
-                columns = [
-                    { key: 'fecha_creacion', label: 'Fecha', format: val => formatDate(val) },
-                    { key: 'nro_agencia', label: 'Agencia' },
-                    { key: 'nro_sucursal', label: 'Sucursal' },
-                    { key: 'ocr', label: 'OCR' },
-                    { key: 'monto_apuesta', label: 'Monto', format: val => `$${val?.toLocaleString('es-AR')}` },
-                    { key: 'validado', label: 'Validado', format: renderStatusBadge },
-                    // { key: 'verificado', label: 'Verificado', format: renderStatusBadge },
-                    { key: 'actions', label: 'Acciones', format: (val, item) => renderActions(item) }
-                ];
-            } else {
-                columns = [
-                    { key: 'fecha_creacion', label: 'Fecha', format: val => formatDate(val) },
-                    { key: 'descripcion_empresa', label: 'Empresa' },
-                    { key: 'cuit_comercio', label: 'CUIT' },
-                    { key: 'numero_ticket_factura', label: 'Comprobante' },
-                    { key: 'monto_total_compra', label: 'Monto', format: val => `$${val?.toLocaleString('es-AR')}` },
-                    { key: 'validado', label: 'Validado', format: renderStatusBadge },
-                    // { key: 'verificado', label: 'Verificado', format: renderStatusBadge },
-                    { key: 'actions', label: 'Acciones', format: (val, item) => renderActions(item) }
-                ];
-            }
-
             // Render Headers
-            columns.forEach(col => {
-                const th = document.createElement('th');
-                th.className = "pb-3 pl-4 font-semibold text-gray-600";
-                th.innerText = col.label;
-                theadRow.appendChild(th);
-            });
+            if (currentMode === 'agencia') {
+                const headers = ['Agencia', 'Sucursal', 'OCR', 'Monto', 'Fecha', 'Verificado', 'Acciones'];
+                headers.forEach(h => {
+                    const th = document.createElement('th');
+                    th.className = "pb-3 pl-4 font-semibold text-gray-600";
+                    th.innerText = h;
+                    theadRow.appendChild(th);
+                });
+            } else {
+                const headers = ['Empresa', 'CUIT', 'Nro. Comprobante', 'Monto', 'Fecha', 'Verificado', 'Acciones'];
+                headers.forEach(h => {
+                    const th = document.createElement('th');
+                    th.className = "pb-3 pl-4 font-semibold text-gray-600";
+                    th.innerText = h;
+                    theadRow.appendChild(th);
+                });
+            }
 
             // Render Rows
             recordsData.forEach(item => {
@@ -416,19 +459,31 @@
                 const tr = document.createElement('tr');
                 tr.className = "border-b border-gray-50 hover:bg-white transition-colors bg-white/50";
 
-                columns.forEach(col => {
-                    const td = document.createElement('td');
-                    td.className = "py-4 pl-4 text-gray-700 align-middle";
-
-                    if (col.key === 'actions') {
-                        td.innerHTML = col.format(null, item);
-                    } else {
-                        const value = item[col.key];
-                        td.innerHTML = col.format ? col.format(value, item) : (value || '-');
-                    }
-
-                    tr.appendChild(td);
-                });
+                if (currentMode === 'agencia') {
+                    tr.innerHTML = `
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${item.nro_agencia || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${item.nro_sucursal || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle font-mono break-all">${item.ocr || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle font-semibold">$${item.monto_apuesta?.toLocaleString('es-AR') || '0'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${formatDate(item.fecha_creacion)}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${renderStatusBadge(item.verificado)}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">
+                            ${renderActions(item)}
+                        </td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${item.descripcion_empresa || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${item.cuit_comercio || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle font-mono">${item.numero_ticket_factura || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle font-semibold">$${item.monto_total_compra?.toLocaleString('es-AR') || '0'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${formatDate(item.fecha_creacion)}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${renderStatusBadge(item.verificado)}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">
+                            ${renderActions(item)}
+                        </td>
+                    `;
+                }
 
                 tbody.appendChild(tr);
             });
@@ -518,9 +573,10 @@
             const loadingElement = document.getElementById('imageLoading');
             const noImageElement = document.getElementById('noImage');
 
-            // Observation Reset
-            document.getElementById('modalObservacion').value = '';
-            document.getElementById('charCount').textContent = '0';
+            // Observation Populate
+            const existingObs = item.observacion || '';
+            document.getElementById('modalObservacion').value = existingObs;
+            document.getElementById('charCount').textContent = existingObs.length;
 
             imgElement.classList.add('hidden');
             imgElement.src = '';
