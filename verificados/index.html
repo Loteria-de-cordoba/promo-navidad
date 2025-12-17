@@ -264,7 +264,7 @@
                 </div>
 
                 <div class="flex justify-between items-center gap-3">
-                    <div class="flex gap-3">
+                    <div id="modalActionButtons" class="flex gap-3">
                         <button onclick="anularRecord()"
                             class="px-5 py-2.5 bg-red-50 text-red-600 border border-red-200 font-semibold rounded-lg hover:bg-red-100 transition-colors flex items-center gap-2">
                             <span>🚫</span> Anular
@@ -473,8 +473,8 @@
                     `;
                 } else {
                     tr.innerHTML = `
-                        <td class="py-4 pl-4 text-gray-700 align-middle">${item.descripcion_empresa || '-'}</td>
-                        <td class="py-4 pl-4 text-gray-700 align-middle">${item.cuit_comercio || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle text-xs max-w-[150px] truncate" title="${item.descripcion_empresa || ''}">${item.descripcion_empresa || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle whitespace-nowrap">${item.cuit_comercio || '-'}</td>
                         <td class="py-4 pl-4 text-gray-700 align-middle font-mono">${item.numero_ticket_factura || '-'}</td>
                         <td class="py-4 pl-4 text-gray-700 align-middle font-semibold">$${item.monto_total_compra?.toLocaleString('es-AR') || '0'}</td>
                         <td class="py-4 pl-4 text-gray-700 align-middle">${formatDate(item.fecha_creacion)}</td>
@@ -585,6 +585,16 @@
 
             // Start Fetching Image
             fetchImage(id);
+
+            // Conditional Buttons Visibility
+            const actionButtons = document.getElementById('modalActionButtons');
+            // User requested: if query param verificado = X, hide buttons.
+            // We use currentStatus which tracks the filter state.
+            if (currentStatus === 'X') {
+                actionButtons.classList.add('hidden');
+            } else {
+                actionButtons.classList.remove('hidden');
+            }
 
             // Show Modal
             const modal = document.getElementById('detailsModal');
