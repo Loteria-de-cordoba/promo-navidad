@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registros Verificados - El Centro está de Fiesta</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            min-height: 100vh;
+        }
+
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+    </style>
+    <script>
+        // Session Check
+        const isAuthenticated = localStorage.getItem('isAuthenticated');
+        if (!isAuthenticated) {
+            window.location.href = 'login.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('userEmail');
+            localStorage.removeItem('userKey');
+            window.location.href = 'login.html';
+        }
+    </script>
+</head>
+
+<body class="p-4 md:p-8 font-sans text-gray-800">
+
+    <div class="max-w-7xl mx-auto">
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-6 rounded-2xl shadow-lg">
+            <div class="flex items-center gap-4 mb-4 md:mb-0">
+                <div class="bg-green-100 p-3 rounded-full">
+                    <span class="text-4xl">✅</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">Registros Verificados</h1>
+                    <p class="text-gray-500 text-sm">Panel de control de validación</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <!-- Logout Button -->
+                <button onclick="logout()" class="text-gray-400 hover:text-red-500 transition-colors p-2"
+                    title="Cerrar Sesión">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                        </path>
+                    </svg>
+                </button>
+
+                <!-- Status Filters (Visible in both modes now) -->
+                <div id="statusFilters" class="flex bg-gray-50 p-1 rounded-lg border border-gray-100">
+                    <button onclick="setStatus('N')" id="btnStatusN"
+                        class="px-3 py-1.5 text-xs font-semibold rounded-md transition-colors bg-white shadow text-gray-800">
+                        ⏳ Pendientes
+                    </button>
+                    <button onclick="setStatus('S')" id="btnStatusS"
+                        class="px-3 py-1.5 text-xs font-semibold rounded-md text-gray-500 hover:text-gray-800 transition-colors">
+                        ✅ Verificados
+                    </button>
+                    <button onclick="setStatus('X')" id="btnStatusX"
+                        class="px-3 py-1.5 text-xs font-semibold rounded-md text-gray-500 hover:text-gray-800 transition-colors">
+                        🚫 Anulados
+                    </button>
+                </div>
+
+                <!-- Toggle Switch -->
+                <div class="flex items-center bg-gray-100 p-1.5 rounded-xl">
+                    <button id="btnAgencia" onclick="setMode('agencia')"
+                        class="px-6 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm bg-white text-green-700">
+                        🏪 Agencias
+                    </button>
+                    <button id="btnComercio" onclick="setMode('comercio')"
+                        class="px-6 py-2 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all">
+                        🛒 Comercios
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Area -->
+        <div class="glass-effect rounded-2xl p-6 md:p-8 min-h-[500px]">
+            <!-- Loading State -->
+            <div id="loading" class="hidden flex justify-center items-center h-64">
+                <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+            </div>
+
+            <!-- Table Container -->
+            <div id="tableContainer" class="overflow-x-auto fade-in">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="text-gray-500 border-b border-gray-200 text-sm uppercase tracking-wider">
+                            <!-- Headers will be injected here -->
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody" class="text-sm">
+                        <!-- Rows will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="hidden flex flex-col items-center justify-center h-64 text-gray-400">
+                <span class="text-5xl mb-4">📭</span>
+                <p class="text-lg">No se encontraron registros para esta categoría.</p>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div id="paginationControls" class="hidden flex justify-center items-center mt-6 gap-4 fade-in">
+                <button id="btnPrev" onclick="changePage(-1)"
+                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700">
+                    ⬅️ Anterior
+                </button>
+                <span id="pageIndicator"
+                    class="text-sm font-semibold text-gray-700 bg-white px-4 py-2 rounded-lg border border-gray-200">
+                    Página 1
+                </span>
+                <button id="btnNext" onclick="changePage(1)"
+                    class="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors text-gray-700">
+                    Siguiente ➡️
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Modal -->
+    <div id="detailsModal"
+        class="hidden fixed inset-0 z-50 overflow-y-auto modal-overlay flex justify-center items-center p-4">
+        <div
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-7xl max-h-[90vh] flex flex-col transform transition-all scale-100">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    📄 Detalle del Comprobante
+                </h3>
+                <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto flex-1">
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-8">
+                    <!-- Info Section -->
+                    <div class="md:col-span-4 space-y-4">
+
+                        <!-- Comercio Fields -->
+                        <div id="comercioFields" class="bg-gray-50 p-4 rounded-xl space-y-3 hidden">
+                            <h4 class="font-semibold text-gray-700 border-b border-gray-200 pb-2 mb-2">
+                                Información
+                                del
+                                Comercio</h4>
+                            <div>
+                                <span class="text-xs font-bold text-gray-500 uppercase">Empresa/Comercio</span>
+                                <p id="modalEmpresa" class="text-lg font-medium text-gray-900">-</p>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold text-gray-500 uppercase">CUIT</span>
+                                <p id="modalCuit" class="text-base text-gray-700 font-mono">-</p>
+                            </div>
+                        </div>
+
+                        <!-- Agencia Fields -->
+                        <div id="agenciaFields" class="bg-purple-50 p-4 rounded-xl space-y-3 hidden">
+                            <h4 class="font-semibold text-purple-800 border-b border-purple-200 pb-2 mb-2">
+                                Información
+                                de Agencia</h4>
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <span class="text-xs font-bold text-purple-600 uppercase">Nro.
+                                        Agencia</span>
+                                    <p id="modalNroAgencia" class="text-lg font-medium text-gray-900 font-mono">
+                                        -
+                                    </p>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-bold text-purple-600 uppercase">Sucursal</span>
+                                    <p id="modalSucursal" class="text-lg font-medium text-gray-900 font-mono">-
+                                    </p>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold text-purple-600 uppercase">OCR</span>
+                                <p id="modalOCR" class="text-base text-gray-700 font-mono break-all">-</p>
+                            </div>
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-xl space-y-3">
+                            <h4 class="font-semibold text-blue-800 border-b border-blue-200 pb-2 mb-2">Detalles
+                                de
+                                la
+                                Transacción</h4>
+                            <!-- Common Fields -->
+                            <div id="fieldTicket" class="hidden">
+                                <span class="text-xs font-bold text-blue-600 uppercase">Nro. Comprobante</span>
+                                <p id="modalTicket" class="text-base text-gray-900 font-mono">-</p>
+                            </div>
+                            <div class="flex justify-between">
+                                <div>
+                                    <span class="text-xs font-bold text-blue-600 uppercase">Fecha</span>
+                                    <p id="modalFecha" class="text-base text-gray-900">-</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-bold text-blue-600 uppercase">Monto Total</span>
+                                    <p id="modalMonto" class="text-xl font-bold text-green-600">-</p>
+                                </div>
+                            </div>
+                            <div id="fieldPago" class="hidden">
+                                <span class="text-xs font-bold text-blue-600 uppercase">Medio de Pago</span>
+                                <p id="modalPago" class="text-base text-gray-900">-</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Section -->
+                    <div class="md:col-span-8 flex flex-col h-full">
+                        <h4 class="font-semibold text-gray-700 mb-3">📸 Imagen del Comprobante</h4>
+                        <div
+                            class="flex-1 bg-gray-100 rounded-xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden min-h-[600px] relative">
+                            <!-- Image Container -->
+                            <img id="modalImage" class="hidden w-full h-full object-contain" alt="Ticket" />
+
+                            <!-- Loading Spinner for Image -->
+                            <div id="imageLoading" class="hidden flex flex-col items-center">
+                                <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mb-2">
+                                </div>
+                                <span class="text-sm text-gray-500">Cargando imagen...</span>
+                            </div>
+
+                            <!-- No Image Placeholder -->
+                            <div id="noImage" class="hidden flex flex-col items-center text-gray-400">
+                                <span class="text-4xl mb-2">🖼️</span>
+                                <span class="text-sm">Sin imagen disponible</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 rounded-b-2xl">
+                <!-- Observation Field -->
+                <div class="mb-4">
+                    <label for="modalObservacion" class="block text-sm font-semibold text-gray-700 mb-1">Observación
+                        (Opcional)</label>
+                    <textarea id="modalObservacion" maxlength="100"
+                        placeholder="Ingrese una observación (máx. 100 caracteres)"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm resize-none h-20 transition-all"></textarea>
+                    <div class="text-right text-xs text-gray-400 mt-1">
+                        <span id="charCount">0</span>/100
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center gap-3">
+                    <div id="modalActionButtons" class="flex gap-3">
+                        <button onclick="anularRecord()"
+                            class="px-5 py-2.5 bg-red-50 text-red-600 border border-red-200 font-semibold rounded-lg hover:bg-red-100 transition-colors flex items-center gap-2">
+                            <span>🚫</span> Anular
+                        </button>
+                        <button onclick="validateRecord()"
+                            class="px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-sm flex items-center gap-2">
+                            <span>✅</span> Validar
+                        </button>
+                    </div>
+                    <button onclick="closeModal()"
+                        class="px-5 py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API URLs
+        const API_URL_COMERCIO = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f41ef9a7ac214c0a9d6da26a1d087ba0/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CLCm0Hot5ySPWwKLIvgEGDtvz2Jp_YqnYn40K6OJitE";
+        const API_URL_AGENCIA = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/9c3f60f9dd2241139c8c8419790c5648/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zU1en4X8GegkCoEKGAjXqdbEdDo-xHnVK2p8OUyUul0";
+        const API_URL_IMAGEN_AGENCIA = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/034ffb47f29c43f2918f361d36bd661e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=rmLYrkoZFc95ZUDblAMVwzf2RKlXW61wq7JfvLciuE0";
+        const API_URL_IMAGEN_COMERCIO = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/cd7cd2bf21ad451cb79f654c7deeb7c6/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=XE8YRfIjbv-y2gp8eIioGP3x20ask7ySwek-_7MGl0I";
+        const API_URL_VERIFICACION_COMERCIO = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/d3a478d5243d4bd79c12b0fceb30f035/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=5ZBw3Y-X-GwxkZHzndzwNAoi1_jobLznZfJivxWrnHA";
+        const API_URL_VERIFICACION_AGENCIA = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/12be5d47fadf4d71a84824121b114dc1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=zFY_gjq3ZVF1gOO1JAtzN-w-2yg1pxnqjI0g9d4NQA4";
+
+        // State
+        let currentMode = 'agencia'; // 'agencia' or 'comercio'
+        let currentStatus = 'N'; // 'N' (Pending), 'S' (Verified), 'X' (Annulled)
+        let currentPage = 1;
+        let recordsData = [];
+        let currentRecordId = null;
+
+        function getAuthHeaders() {
+            return {
+                'X-Api-User': localStorage.getItem('userEmail') || '',
+                'X-Api-Key': localStorage.getItem('userKey') || ''
+            };
+        }
+
+
+
+        async function setMode(mode) {
+            currentMode = mode;
+            currentPage = 1;
+            currentStatus = 'N'; // Reset status when switching modes
+            recordsData = [];
+
+            // Update Buttons UI
+            const btnAgencia = document.getElementById('btnAgencia');
+            const btnComercio = document.getElementById('btnComercio');
+            const statusFilters = document.getElementById('statusFilters');
+
+            if (mode === 'agencia') {
+                btnAgencia.className = "px-6 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm bg-white text-green-700";
+                btnComercio.className = "px-6 py-2 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all";
+                // statusFilters.classList.remove('hidden'); // Always visible now
+                updateStatusUI();
+            } else {
+                btnComercio.className = "px-6 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm bg-white text-blue-700";
+                btnAgencia.className = "px-6 py-2 rounded-lg text-sm font-semibold text-gray-500 hover:text-gray-700 transition-all";
+                // statusFilters.classList.add('hidden'); // Always visible now
+                updateStatusUI();
+            }
+
+            // Load Data
+            await loadData();
+        }
+
+        function setStatus(status) {
+            currentStatus = status;
+            currentPage = 1;
+            updateStatusUI();
+            loadData();
+        }
+
+        function updateStatusUI() {
+            const btns = ['N', 'S', 'X'];
+            btns.forEach(s => {
+                const btn = document.getElementById(`btnStatus${s}`);
+                if (s === currentStatus) {
+                    btn.className = "px-3 py-1.5 text-xs font-semibold rounded-md transition-colors bg-white shadow text-gray-800 border-gray-200 border";
+                } else {
+                    btn.className = "px-3 py-1.5 text-xs font-semibold rounded-md text-gray-500 hover:text-gray-800 transition-colors";
+                }
+            });
+        }
+
+        async function loadData() {
+            isLoading = true;
+            updateUIState();
+
+            try {
+                const baseUrl = currentMode === 'agencia' ? API_URL_AGENCIA : API_URL_COMERCIO;
+                let url = `${baseUrl}&page=${currentPage}`;
+
+                // Append verification status for both
+                url += `&verificado=${currentStatus}`;
+
+                console.log("Fetching URL:", url); // Debugging
+
+                const response = await fetch(url, { headers: getAuthHeaders() });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                const data = await response.json();
+                recordsData = Array.isArray(data) ? data : (data.value || []);
+
+            } catch (error) {
+                console.error("Error loading data:", error);
+                recordsData = [];
+                // alert("Hubo un error al cargar los datos."); 
+            } finally {
+                isLoading = false;
+                updateUIState();
+                renderTable();
+            }
+        }
+
+        function changePage(delta) {
+            const newPage = currentPage + delta;
+            if (newPage < 1) return;
+
+            currentPage = newPage;
+            loadData();
+        }
+
+        function updateUIState() {
+            const loading = document.getElementById('loading');
+            const tableContainer = document.getElementById('tableContainer');
+            const emptyState = document.getElementById('emptyState');
+            const btnPrev = document.getElementById('btnPrev');
+            const pageIndicator = document.getElementById('pageIndicator');
+            const btnNext = document.getElementById('btnNext');
+            const paginationControls = document.getElementById('paginationControls');
+
+            // Show/Hide Pagination
+            paginationControls.classList.remove('hidden');
+
+            pageIndicator.innerText = `Página ${currentPage}`;
+            btnPrev.disabled = currentPage <= 1 || isLoading;
+
+            // Assuming 10 items per page
+            const hasMore = recordsData.length === 10;
+            btnNext.disabled = isLoading || !hasMore;
+
+            if (isLoading) {
+                loading.classList.remove('hidden');
+                tableContainer.classList.add('hidden');
+                emptyState.classList.add('hidden');
+            } else {
+                loading.classList.add('hidden');
+            }
+        }
+
+        function renderTable() {
+            if (isLoading) return;
+
+            const container = document.getElementById('tableContainer');
+            const tbody = document.getElementById('tableBody');
+            const theadRow = document.querySelector('thead tr');
+            const emptyState = document.getElementById('emptyState');
+
+            // Clear content
+            tbody.innerHTML = '';
+            theadRow.innerHTML = '';
+
+            if (!recordsData || recordsData.length === 0) {
+                container.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                container.classList.remove('hidden');
+                emptyState.classList.add('hidden');
+            }
+
+            // Render Headers
+            if (currentMode === 'agencia') {
+                const headers = ['Agencia', 'Sucursal', 'OCR', 'Monto', 'Fecha', 'Verificado', 'Acciones'];
+                headers.forEach(h => {
+                    const th = document.createElement('th');
+                    th.className = "pb-3 pl-4 font-semibold text-gray-600";
+                    th.innerText = h;
+                    theadRow.appendChild(th);
+                });
+            } else {
+                const headers = ['Empresa', 'CUIT', 'Nro. Comprobante', 'Monto', 'Fecha', 'Verificado', 'Acciones'];
+                headers.forEach(h => {
+                    const th = document.createElement('th');
+                    th.className = "pb-3 pl-4 font-semibold text-gray-600";
+                    th.innerText = h;
+                    theadRow.appendChild(th);
+                });
+            }
+
+            // Render Rows
+            recordsData.forEach(item => {
+                // Determine ID (either id_compra or id_agencia)
+                const id = currentMode === 'agencia' ? item.id_agencia : item.id_compra;
+
+                const tr = document.createElement('tr');
+                tr.className = "border-b border-gray-50 hover:bg-white transition-colors bg-white/50";
+
+                if (currentMode === 'agencia') {
+                    tr.innerHTML = `
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${item.nro_agencia || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${item.nro_sucursal || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle font-mono break-all">${item.ocr || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle font-semibold">$${item.monto_apuesta?.toLocaleString('es-AR') || '0'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${formatDate(item.fecha_creacion)}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${renderStatusBadge(item.verificado)}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">
+                            ${renderActions(item)}
+                        </td>
+                    `;
+                } else {
+                    tr.innerHTML = `
+                        <td class="py-4 pl-4 text-gray-700 align-middle text-xs max-w-[150px] truncate" title="${item.descripcion_empresa || ''}">${item.descripcion_empresa || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle whitespace-nowrap">${item.cuit_comercio || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle font-mono">${item.numero_ticket_factura || '-'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle font-semibold">$${item.monto_total_compra?.toLocaleString('es-AR') || '0'}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${formatDate(item.fecha_creacion)}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">${renderStatusBadge(item.verificado)}</td>
+                        <td class="py-4 pl-4 text-gray-700 align-middle">
+                            ${renderActions(item)}
+                        </td>
+                    `;
+                }
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderActions(item) {
+            const id = currentMode === 'agencia' ? item.id_agencia : item.id_compra;
+            return `
+                <button onclick="openModal('${id}')" class="group flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all text-xs font-semibold border border-blue-200 hover:border-blue-600">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Ver Detalle
+                </button>
+             `;
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            try {
+                const date = new Date(dateString);
+                return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        function renderStatusBadge(status) {
+            if (status === 'S' || status === 'YES' || status === true) {
+                return '<span class="px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-200">SÍ</span>';
+            } else {
+                return '<span class="px-2 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-200">NO</span>';
+            }
+        }
+
+        // --- Modal Logic ---
+
+        function openModal(id) {
+            currentRecordId = id;
+
+            // Find item based on mode
+            const idKey = currentMode === 'agencia' ? 'id_agencia' : 'id_compra';
+            const item = recordsData.find(d => d[idKey] === id);
+
+            if (!item) return;
+
+            const comercioFields = document.getElementById('comercioFields');
+            const agenciaFields = document.getElementById('agenciaFields');
+            const fieldTicket = document.getElementById('fieldTicket');
+            const fieldPago = document.getElementById('fieldPago');
+
+            if (currentMode === 'agencia') {
+                // Show Agency Fields
+                comercioFields.classList.add('hidden');
+                agenciaFields.classList.remove('hidden');
+                fieldTicket.classList.add('hidden'); // No ticket number field in mock for agency, uses OCR
+                fieldPago.classList.add('hidden');
+
+                // Populate Agency
+                document.getElementById('modalNroAgencia').textContent = item.nro_agencia || '-';
+                document.getElementById('modalSucursal').textContent = item.nro_sucursal || '-';
+                document.getElementById('modalOCR').textContent = item.ocr || '-';
+                document.getElementById('modalMonto').textContent = item.monto_apuesta ? `$${item.monto_apuesta.toLocaleString('es-AR')}` : '-';
+                document.getElementById('modalFecha').textContent = formatDate(item.fecha_creacion);
+
+            } else {
+                // Show Commerce Fields
+                comercioFields.classList.remove('hidden');
+                agenciaFields.classList.add('hidden');
+                fieldTicket.classList.remove('hidden');
+                fieldPago.classList.remove('hidden');
+
+                // Populate Commerce
+                document.getElementById('modalEmpresa').textContent = item.descripcion_empresa || '-';
+                document.getElementById('modalCuit').textContent = item.cuit_comercio || '-';
+                document.getElementById('modalTicket').textContent = item.numero_ticket_factura || '-';
+                document.getElementById('modalMonto').textContent = item.monto_total_compra ? `$${item.monto_total_compra.toLocaleString('es-AR')}` : '-';
+                document.getElementById('modalFecha').textContent = formatDate(item.fecha_creacion);
+
+                const pagoText = item.medio_pago === 'bancor' ? '💳 Bancor' : (item.medio_pago === 'otros' ? '💰 Otros' : item.medio_pago || '-');
+                document.getElementById('modalPago').textContent = pagoText;
+            }
+
+            // Image Handling (Reset)
+            const imgElement = document.getElementById('modalImage');
+            const loadingElement = document.getElementById('imageLoading');
+            const noImageElement = document.getElementById('noImage');
+
+            // Observation Populate
+            const existingObs = item.observacion || '';
+            document.getElementById('modalObservacion').value = existingObs;
+            document.getElementById('charCount').textContent = existingObs.length;
+
+            imgElement.classList.add('hidden');
+            imgElement.src = '';
+            loadingElement.classList.add('hidden');
+            noImageElement.classList.add('hidden');
+
+            // Start Fetching Image
+            fetchImage(id);
+
+            // Conditional Buttons Visibility
+            const actionButtons = document.getElementById('modalActionButtons');
+            // Show buttons only if status is 'N' (Pending)
+            if (currentStatus === 'N') {
+                actionButtons.classList.remove('hidden');
+            } else {
+                actionButtons.classList.add('hidden');
+            }
+
+            // Show Modal
+            const modal = document.getElementById('detailsModal');
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+
+
+        async function fetchImage(id) {
+            const imgElement = document.getElementById('modalImage');
+            const loadingElement = document.getElementById('imageLoading');
+            const noImageElement = document.getElementById('noImage');
+
+            // Reset UI
+            imgElement.classList.add('hidden');
+            imgElement.src = '';
+            loadingElement.classList.remove('hidden');
+            noImageElement.classList.add('hidden');
+
+            try {
+                let url = null;
+                if (currentMode === 'agencia') {
+                    url = `${API_URL_IMAGEN_AGENCIA}&id_agencia=${id}`;
+                } else {
+                    url = `${API_URL_IMAGEN_COMERCIO}&id_compra=${id}`;
+                }
+
+                const response = await fetch(url, { headers: getAuthHeaders() });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+
+                // Handle as Blob (Binary)
+                const blob = await response.blob();
+
+                if (blob.size > 0) {
+                    const objectUrl = URL.createObjectURL(blob);
+
+                    // Revoke previous URL if needed (ideally we track this to clean up)
+                    imgElement.onload = () => {
+                        // URL.revokeObjectURL(objectUrl); // Optional: revoke after load if we don't need it later
+                    };
+
+                    imgElement.src = objectUrl;
+                    imgElement.classList.remove('hidden');
+                } else {
+                    console.warn("Empty blob received");
+                    noImageElement.classList.remove('hidden');
+                }
+
+            } catch (error) {
+                console.error("Error fetching image:", error);
+                noImageElement.classList.remove('hidden');
+                loadingElement.classList.add('hidden');
+            }
+        }
+
+        async function validateRecord() {
+            if (!currentRecordId) return;
+
+            if (confirm('¿Estás seguro que deseas VALIDAR este comprobante?')) {
+                const obs = document.getElementById('modalObservacion').value;
+
+                if (currentMode === 'comercio') {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_COMERCIO, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                ...getAuthHeaders()
+                            },
+                            body: JSON.stringify({
+                                id_compra: currentRecordId,
+                                verificado: 'S',
+                                observacion: obs
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API');
+
+                        alert('Registro validado correctamente.');
+                        closeModal();
+                        // Refresh data
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al validar el registro.');
+                    }
+                } else {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_AGENCIA, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                ...getAuthHeaders()
+                            },
+                            body: JSON.stringify({
+                                id_agencia: currentRecordId,
+                                verificado: 'S',
+                                observacion: obs
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API Agencia');
+                        alert('Registro de agencia validado correctamente.');
+                        closeModal();
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al validar agencia.');
+                    }
+                }
+            }
+        }
+
+        async function anularRecord() {
+            if (!currentRecordId) return;
+
+            if (confirm('¿Estás seguro que deseas ANULAR este comprobante?')) {
+                const obs = document.getElementById('modalObservacion').value;
+
+                if (currentMode === 'comercio') {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_COMERCIO, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                ...getAuthHeaders()
+                            },
+                            body: JSON.stringify({
+                                id_compra: currentRecordId,
+                                verificado: 'X',
+                                observacion: obs
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API');
+
+                        alert('Registro anulado correctamente.');
+                        closeModal();
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al anular el registro.');
+                    }
+                } else {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_AGENCIA, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                ...getAuthHeaders()
+                            },
+                            body: JSON.stringify({
+                                id_agencia: currentRecordId,
+                                verificado: 'X',
+                                observacion: obs
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API Agencia');
+                        alert('Registro de agencia anulado correctamente.');
+                        closeModal();
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al anular agencia.');
+                    }
+                }
+            }
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('detailsModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        // Close on overlay click
+        document.getElementById('detailsModal').addEventListener('click', function (e) {
+            if (e.target === this) closeModal();
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            setMode('agencia');
+
+            // Character Count Logic
+            const textarea = document.getElementById('modalObservacion');
+            const countDisplay = document.getElementById('charCount');
+
+            textarea.addEventListener('input', function () {
+                const currentLength = this.value.length;
+                countDisplay.textContent = currentLength;
+            });
+        });
+
+    </script>
+</body>
+
+</html>
