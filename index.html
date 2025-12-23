@@ -647,7 +647,7 @@
 
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">
-                                Medio de Pago
+                                Medio de Pago *
                             </label>
                             <div class="space-y-3">
                                 <div
@@ -1144,6 +1144,37 @@
                 const montoComercio = parseFloat(document.getElementById('monto').value);
                 if (!montoComercio || montoComercio < 25000) {
                     alert('El monto de la compra debe ser mayor o igual a $25.000');
+                    return;
+                }
+
+                // Validate payment method
+                const medioPago = document.querySelector('input[name="medioPago"]:checked');
+                if (!medioPago) {
+                    alert('⚠️ MEDIO DE PAGO REQUERIDO\n\nPor favor, seleccioná un medio de pago (Bancor u Otros) para continuar.\n\nRecordá que si pagaste con Bancor tenés doble chance de ganar.');
+
+                    // Scroll to payment method section and highlight it
+                    const medioPagoSection = document.querySelector('input[name="medioPago"]').closest('.space-y-3');
+                    if (medioPagoSection) {
+                        medioPagoSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        medioPagoSection.style.animation = 'shake 0.5s';
+
+                        // Highlight both payment options
+                        const paymentOptions = medioPagoSection.querySelectorAll('.flex.items-center');
+                        paymentOptions.forEach(option => {
+                            option.style.borderColor = '#ef4444';
+                            option.style.backgroundColor = '#fee2e2';
+                        });
+
+                        // Remove highlight after 3 seconds
+                        setTimeout(() => {
+                            medioPagoSection.style.animation = '';
+                            paymentOptions.forEach(option => {
+                                option.style.borderColor = '';
+                                option.style.backgroundColor = '';
+                            });
+                        }, 3000);
+                    }
+
                     return;
                 }
 
