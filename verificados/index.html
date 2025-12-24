@@ -307,6 +307,32 @@
         </div>
     </div>
 
+    <!-- Image Modal -->
+    <div id="imageModal"
+        class="hidden fixed inset-0 z-50 overflow-y-auto modal-overlay flex justify-center items-center p-4">
+        <div
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col transform transition-all scale-100">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+                <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+                    📸 Imagen del Comprobante
+                </h3>
+                <button onclick="closeImageModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 overflow-y-auto flex-1 flex items-center justify-center bg-gray-50">
+                <img id="imageModalImg" src="" alt="Comprobante"
+                    class="max-w-full max-h-full object-contain rounded-lg" />
+            </div>
+        </div>
+    </div>
+
     <script>
         // API URLs
         const API_URL_COMERCIO = "https://default4ff172a4c9ce49b0b39d8f0bd292c0.42.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f41ef9a7ac214c0a9d6da26a1d087ba0/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=CLCm0Hot5ySPWwKLIvgEGDtvz2Jp_YqnYn40K6OJitE";
@@ -557,15 +583,46 @@
 
         function renderActions(item) {
             const id = currentMode === 'agencia' ? item.id_agencia : item.id_compra;
-            return `
-                <button onclick="openModal('${id}')" class="group flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all text-xs font-semibold border border-blue-200 hover:border-blue-600">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                    </svg>
-                    Ver Detalle
-                </button>
-             `;
+
+            // For pending records (status 'N'), show inline action buttons
+            if (currentStatus === 'N') {
+                // Get the image URL based on mode
+                const imageUrl = currentMode === 'agencia' ? item.foto_ticket_url : item.foto_ticket_factura_url;
+
+                return `
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="validateRecordInline('${id}')" class="flex items-center gap-1 px-2 py-1 bg-green-50 text-green-600 rounded-lg hover:bg-green-600 hover:text-white transition-all text-xs font-semibold border border-green-200">
+                            <span>✅</span> Validar
+                        </button>
+                        <button onclick="anularRecordInline('${id}')" class="flex items-center gap-1 px-2 py-1 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all text-xs font-semibold border border-red-200">
+                            <span>🚫</span> Anular
+                        </button>
+                        ${imageUrl ? `
+                        <button onclick="openImageModal('${imageUrl}')" class="flex items-center gap-1 px-2 py-1 bg-purple-50 text-purple-600 rounded-lg hover:bg-purple-600 hover:text-white transition-all text-xs font-semibold border border-purple-200">
+                            <span>📸</span> Ver Imagen
+                        </button>
+                        ` : ''}
+                        <button disabled class="flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-400 rounded-lg cursor-not-allowed text-xs font-semibold border border-gray-200 opacity-50">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            Ver Detalle
+                        </button>
+                    </div>
+                `;
+            } else {
+                // For verified/annulled records, show the original "Ver Detalle" button
+                return `
+                    <button onclick="openModal('${id}')" class="group flex items-center gap-1.5 px-3 py-1.5 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all text-xs font-semibold border border-blue-200 hover:border-blue-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                        Ver Detalle
+                    </button>
+                `;
+            }
         }
 
         function formatDate(dateString) {
@@ -851,15 +908,142 @@
             }
         }
 
+        async function validateRecordInline(id) {
+            if (confirm('¿Estás seguro que deseas VALIDAR este comprobante?')) {
+                if (currentMode === 'comercio') {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_COMERCIO, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                ...getAuthHeaders()
+                            },
+                            body: JSON.stringify({
+                                id_compra: id,
+                                verificado: 'S',
+                                observacion: ''
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API');
+
+                        alert('Registro validado correctamente.');
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al validar el registro.');
+                    }
+                } else {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_AGENCIA, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                ...getAuthHeaders()
+                            },
+                            body: JSON.stringify({
+                                id_agencia: id,
+                                verificado: 'S',
+                                observacion: ''
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API Agencia');
+                        alert('Registro de agencia validado correctamente.');
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al validar agencia.');
+                    }
+                }
+            }
+        }
+
+        async function anularRecordInline(id) {
+            if (confirm('¿Estás seguro que deseas ANULAR este comprobante?')) {
+                const obs = prompt('Observación (opcional, máx. 100 caracteres):') || '';
+
+                if (currentMode === 'comercio') {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_COMERCIO, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                ...getAuthHeaders()
+                            },
+                            body: JSON.stringify({
+                                id_compra: id,
+                                verificado: 'X',
+                                observacion: obs.substring(0, 100)
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API');
+
+                        alert('Registro anulado correctamente.');
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al anular el registro.');
+                    }
+                } else {
+                    try {
+                        const response = await fetch(API_URL_VERIFICACION_AGENCIA, {
+                            method: 'PUT',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                ...getAuthHeaders()
+                            },
+                            body: JSON.stringify({
+                                id_agencia: id,
+                                verificado: 'X',
+                                observacion: obs.substring(0, 100)
+                            })
+                        });
+
+                        if (!response.ok) throw new Error('Error en API Agencia');
+                        alert('Registro de agencia anulado correctamente.');
+                        loadData();
+
+                    } catch (e) {
+                        console.error(e);
+                        alert('Error al anular agencia.');
+                    }
+                }
+            }
+        }
+
         function closeModal() {
             const modal = document.getElementById('detailsModal');
             modal.classList.add('hidden');
             document.body.style.overflow = '';
         }
 
+        function openImageModal(imageUrl) {
+            const modal = document.getElementById('imageModal');
+            const img = document.getElementById('imageModalImg');
+            img.src = imageUrl;
+            modal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeImageModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+
         // Close on overlay click
         document.getElementById('detailsModal').addEventListener('click', function (e) {
             if (e.target === this) closeModal();
+        });
+
+        document.getElementById('imageModal').addEventListener('click', function (e) {
+            if (e.target === this) closeImageModal();
         });
 
         // Initialize
