@@ -309,11 +309,11 @@
 
     <!-- Image Modal -->
     <div id="imageModal"
-        class="hidden fixed inset-0 z-50 overflow-y-auto modal-overlay flex justify-center items-center p-4">
+        class="hidden fixed inset-0 z-50 overflow-y-auto modal-overlay flex justify-center items-center p-2">
         <div
-            class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col transform transition-all scale-100">
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] flex flex-col transform transition-all scale-100">
             <!-- Modal Header -->
-            <div class="flex justify-between items-center p-6 border-b border-gray-100">
+            <div class="flex justify-between items-center p-4 border-b border-gray-100">
                 <h3 class="text-xl font-bold text-gray-800 flex items-center gap-2">
                     📸 Imagen del Comprobante
                 </h3>
@@ -326,9 +326,8 @@
             </div>
 
             <!-- Modal Body -->
-            <div class="p-6 overflow-y-auto flex-1 flex items-center justify-center bg-gray-50">
-                <img id="imageModalImg" src="" alt="Comprobante"
-                    class="max-w-full max-h-full object-contain rounded-lg" />
+            <div class="p-4 overflow-auto flex-1 flex items-start justify-center bg-gray-50">
+                <img id="imageModalImg" src="" alt="Comprobante" class="w-full h-auto object-contain rounded-lg" />
             </div>
         </div>
     </div>
